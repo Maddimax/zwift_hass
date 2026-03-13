@@ -50,6 +50,7 @@ The following **sensor entities** are created per player:
 | Max Streak | Sensor | Longest activity streak (days) |
 | Racing Score | Sensor | Competition racing score |
 | Racing Category | Sensor | Racing category (uses women's category when applicable) |
+| FTP | Sensor | Functional Threshold Power (W) |
 
 Managing Players
 ===

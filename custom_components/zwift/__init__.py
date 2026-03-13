@@ -237,6 +237,9 @@ class ZwiftPlayerData:
         return metrics.get("categoryWomen", None)
 
     @property
+    def ftp(self):
+        return self.player_profile.get("ftp", None)
+    @property
     def image_src(self):
         return self.player_profile.get("imageSrc", None)
 

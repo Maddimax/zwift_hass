@@ -67,4 +67,5 @@ SENSOR_TYPES = {
     "streaksmaxlength": {"name": "Max Streak", "unit": "days", "icon": "mdi:trophy"},
     "racingscore": {"name": "Racing Score", "icon": "mdi:podium"},
     "racingcategory": {"name": "Racing Category", "icon": "mdi:format-list-numbered"},
+    "ftp": {"name": "FTP", "unit": "W", "icon": "mdi:flash"},
 }
