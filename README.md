@@ -90,3 +90,40 @@ The Online sensor is populated with attributes from the Zwift API profile data a
 * Distance/Wattage/Elevation/Length/Calories/Title/Start&End Date of the last/current activity
 * Total all time statistics (watt hours, distance, elevation etc)
 * Current FTP
+
+Upgrading from older versions
+===
+
+Previous versions of this integration required entering player IDs manually as a comma-separated string. The new version lets you select players from your Zwift followees list instead.
+
+### YAML configuration
+
+If you configured via `configuration.yaml`, the YAML import path still works but is **deprecated**. To migrate:
+
+1. Update the old sensor platform block in your `configuration.yaml` to the new `zwift:` format:
+
+   ```yaml
+   # Old format — replace this:
+   sensor:
+     - platform: zwift
+       username: !secret my_zwift_username
+       password: !secret my_zwift_password
+       players:
+         - !secret my_friends_zwift_player_id
+
+   # New format:
+   zwift:
+     username: !secret my_zwift_username
+     password: !secret my_zwift_password
+     players:
+       - !secret my_friends_zwift_player_id
+   ```
+
+2. Restart Home Assistant — the integration will automatically import your YAML configuration and create a config entry
+3. Once Home Assistant has started and you can see the Zwift integration under **Settings → Devices & Services**, remove the `zwift:` block from your `configuration.yaml` entirely
+4. Restart Home Assistant again — the integration will continue to work from the imported config entry
+5. To manage tracked players going forward, click **Configure** on the integration to select from your followees list
+
+### Device naming change
+
+Devices are now named using the player's **full name** (first + last) from their Zwift profile instead of just the first name. After upgrading, your device names will update automatically on the next data refresh. This may affect automations or dashboard cards that reference device names — entity IDs are unchanged.
