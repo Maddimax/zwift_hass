@@ -7,9 +7,7 @@ from homeassistant.components.image import ImageEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from homeassistant.helpers.device_registry import DeviceEntryType
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
-from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN, SIGNAL_ZWIFT_UPDATE
@@ -47,14 +45,8 @@ class ZwiftProfileImageEntity(ImageEntity):
         self._cached_image = None
 
     @property
-    def device_info(self) -> DeviceInfo:
-        return DeviceInfo(
-            identifiers={(DOMAIN, str(self._player.player_id))},
-            name=f"Zwift {self._player.friendly_player_id}",
-            manufacturer="Zwift",
-            entry_type=DeviceEntryType.SERVICE,
-            configuration_url=f"https://www.zwift.com/athlete/{self._player.player_id}",
-        )
+    def device_info(self):
+        return self._player.device_info
 
     @property
     def name(self):

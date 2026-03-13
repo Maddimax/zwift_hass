@@ -10,6 +10,8 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_NAME, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry as dr
+from homeassistant.helpers.device_registry import DeviceEntryType
+from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.event import async_call_later
 from homeassistant.helpers.dispatcher import dispatcher_send
 
@@ -199,6 +201,16 @@ class ZwiftPlayerData:
     @property
     def image_src(self):
         return self.player_profile.get("imageSrc", None)
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        return DeviceInfo(
+            identifiers={(DOMAIN, str(self._player_id))},
+            name=f"Zwift {self.friendly_player_id}",
+            manufacturer="Zwift",
+            entry_type=DeviceEntryType.SERVICE,
+            configuration_url=f"https://www.zwift.com/athlete/{self._player_id}",
+        )
 
 
 class ZwiftData:

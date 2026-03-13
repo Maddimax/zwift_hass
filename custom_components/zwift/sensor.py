@@ -5,9 +5,8 @@ import logging
 from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.device_registry import DeviceEntryType
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
-from homeassistant.helpers.entity import DeviceInfo, Entity
+from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import (
@@ -60,15 +59,8 @@ class ZwiftSensorEntity(Entity):
         ).replace(" ", "").lower()
 
     @property
-    def device_info(self) -> DeviceInfo:
-        """Return device info to group entities under a single device."""
-        return DeviceInfo(
-            identifiers={(DOMAIN, str(self._player.player_id))},
-            name=f"Zwift {self._player.friendly_player_id}",
-            manufacturer="Zwift",
-            entry_type=DeviceEntryType.SERVICE,
-            configuration_url=f"https://www.zwift.com/athlete/{self._player.player_id}",
-        )
+    def device_info(self):
+        return self._player.device_info
 
     @property
     def name(self):
