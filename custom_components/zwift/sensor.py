@@ -52,8 +52,6 @@ class ZwiftSensorEntity(Entity):
         self._player = player
         self._type = sensor_type
         self._entry = entry
-        self._state = None
-        self._attrs = {}
         self._attr_unique_id = "zwift_{}_{}".format(
             SENSOR_TYPES[self._type]["name"], self._player.player_id
         ).replace(" ", "").lower()
@@ -70,12 +68,19 @@ class ZwiftSensorEntity(Entity):
     @property
     def extra_state_attributes(self):
         """Return the state attributes."""
-        return self._attrs
+        if self._type != "online":
+            return None
+        p = self._player.player_profile
+        return {
+            k: p[k]
+            for k in p
+            if k not in ZWIFT_IGNORED_PROFILE_ATTRIBUTES
+        }
 
     @property
     def state(self):
         """Return the state of the sensor."""
-        return self._state
+        return getattr(self._player, self._type)
 
     @property
     def unit_of_measurement(self):
@@ -90,25 +95,12 @@ class ZwiftSensorEntity(Entity):
     def icon(self):
         return SENSOR_TYPES[self._type].get("icon")
 
-    def update(self):
-        """Get the latest data from the sensor."""
-        self._state = getattr(self._player, self._type)
-        if self._type == "online":
-            p = self._player.player_profile
-            self._attrs.update(
-                {
-                    k: p[k]
-                    for k in p
-                    if k not in ZWIFT_IGNORED_PROFILE_ATTRIBUTES
-                }
-            )
-
     async def async_added_to_hass(self):
         """Register update signal handler."""
 
         async def async_update_state():
             """Update sensor state."""
-            await self.async_update_ha_state(True)
+            self.async_write_ha_state()
 
         async_dispatcher_connect(
             self.hass,

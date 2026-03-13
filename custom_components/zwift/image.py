@@ -81,7 +81,7 @@ class ZwiftProfileImageEntity(ImageEntity):
         """Register update signal handler."""
 
         async def async_update_state():
-            await self.async_update_ha_state(True)
+            self.async_write_ha_state()
 
         async_dispatcher_connect(
             self.hass,
