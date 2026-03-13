@@ -59,4 +59,12 @@ SENSOR_TYPES = {
     "runlevel": {"name": "Run Level", "icon": "mdi:run-fast"},
     "cycleprogress": {"name": "Cycle Progress", "unit": "%", "icon": "mdi:transfer-right"},
     "runprogress": {"name": "Run Progress", "unit": "%", "icon": "mdi:transfer-right"},
+    "totaldistance": {"name": "Total Distance", "unit": "m", "icon": "mdi:map-marker-distance"},
+    "totaldistanceclimbed": {"name": "Total Distance Climbed", "unit": "ft", "unit_metric": "m", "icon": "mdi:elevation-rise"},
+    "totaltimeinminutes": {"name": "Total Time In Minutes", "unit": "min", "icon": "mdi:clock-outline"},
+    "totalgold": {"name": "Drops", "icon": "mdi:water"},
+    "streakscurrentlength": {"name": "Current Streak", "unit": "days", "icon": "mdi:fire"},
+    "streaksmaxlength": {"name": "Max Streak", "unit": "days", "icon": "mdi:trophy"},
+    "racingscore": {"name": "Racing Score", "icon": "mdi:podium"},
+    "racingcategory": {"name": "Racing Category", "icon": "mdi:format-list-numbered"},
 }

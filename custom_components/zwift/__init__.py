@@ -199,6 +199,44 @@ class ZwiftPlayerData:
         return self.player_profile.get("runProgress", None)
 
     @property
+    def totaldistance(self):
+        return self.player_profile.get("totalDistance", None)
+
+    @property
+    def totaldistanceclimbed(self):
+        return self.player_profile.get("totalDistanceClimbed", None)
+
+    @property
+    def totaltimeinminutes(self):
+        return self.player_profile.get("totalTimeInMinutes", None)
+
+    @property
+    def totalgold(self):
+        return self.player_profile.get("totalGold", None)
+
+    @property
+    def streakscurrentlength(self):
+        return self.player_profile.get("streaksCurrentLength", None)
+
+    @property
+    def streaksmaxlength(self):
+        return self.player_profile.get("streaksMaxLength", None)
+
+    @property
+    def racingscore(self):
+        metrics = self.player_profile.get("competitionMetrics", {})
+        return metrics.get("racingScore", None) if metrics else None
+
+    @property
+    def racingcategory(self):
+        metrics = self.player_profile.get("competitionMetrics", {})
+        if not metrics:
+            return None
+        if self.player_profile.get("male", True):
+            return metrics.get("category", None)
+        return metrics.get("categoryWomen", None)
+
+    @property
     def image_src(self):
         return self.player_profile.get("imageSrc", None)
 

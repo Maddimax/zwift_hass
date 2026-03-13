@@ -42,6 +42,14 @@ The following **sensor entities** are created per player:
 | Run Level | Sensor | Running level |
 | Cycle Progress | Sensor | Progress to next cycling level (%) |
 | Run Progress | Sensor | Progress to next running level (%) |
+| Total Distance | Sensor | Total all-time distance (m) |
+| Total Distance Climbed | Sensor | Total all-time elevation climbed (ft / m) |
+| Total Time In Minutes | Sensor | Total all-time ride time (min) |
+| Drops | Sensor | Total in-game currency (Drops) |
+| Current Streak | Sensor | Current activity streak (days) |
+| Max Streak | Sensor | Longest activity streak (days) |
+| Racing Score | Sensor | Competition racing score |
+| Racing Category | Sensor | Racing category (uses women's category when applicable) |
 
 Managing Players
 ===
