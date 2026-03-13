@@ -52,6 +52,14 @@ class ZwiftProfileImageEntity(ImageEntity):
     def name(self):
         return "Profile Picture"
 
+    @property
+    def extra_state_attributes(self):
+        """Return the original image URL as an attribute."""
+        url = self._player.image_src
+        if url:
+            return {"url": url}
+        return None
+
     async def async_image(self) -> bytes | None:
         """Return bytes of image."""
         url = self._player.image_src
