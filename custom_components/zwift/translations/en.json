@@ -31,5 +31,10 @@
                 }
             }
         }
+    },
+    "device_automation": {
+        "trigger_type": {
+            "ride_on": "Ride On received"
+        }
     }
 }
