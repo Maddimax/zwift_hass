@@ -35,7 +35,7 @@ from zwift.error import RequestException
 
 _LOGGER = logging.getLogger(__name__)
 
-PLATFORMS = ["image", "sensor"]
+PLATFORMS = ["image", "light", "sensor"]
 
 CONFIG_SCHEMA = vol.Schema(
     {
@@ -239,6 +239,38 @@ class ZwiftPlayerData:
     @property
     def ftp(self):
         return self.player_profile.get("ftp", None)
+
+    @property
+    def power_zone(self):
+        """Return power zone info based on current power and FTP."""
+        ftp = self.ftp
+        power = self.power
+        if not ftp or ftp == 0:
+            return None
+        ratio = power / ftp
+        zones = [
+            (0.55, 1, "Active Recovery", "#808080"),
+            (0.75, 2, "Endurance", "#3399FF"),
+            (0.90, 3, "Tempo", "#00CC00"),
+            (1.05, 4, "Threshold", "#FFD700"),
+            (1.20, 5, "VO2max", "#FF8C00"),
+            (1.50, 6, "Anaerobic", "#FF0000"),
+        ]
+        for threshold, zone, name, color in zones:
+            if ratio < threshold:
+                return (zone, name, color)
+        return (7, "Neuromuscular", "#800080")
+
+    @property
+    def powerzone(self):
+        info = self.power_zone
+        return info[0] if info else None
+
+    @property
+    def powerzonename(self):
+        info = self.power_zone
+        return info[1] if info else None
+
     @property
     def image_src(self):
         return self.player_profile.get("imageSrc", None)
