@@ -28,6 +28,8 @@ ZWIFT_IGNORED_PROFILE_ATTRIBUTES = [
     "avantlinkId",
     "userAgent",
     "launchedGameClient",
+    "imageSrc",
+    "imageSrcLarge",
 ]
 
 ZWIFT_WORLDS = {

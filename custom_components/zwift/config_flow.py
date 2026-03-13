@@ -24,6 +24,11 @@ class ZwiftConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     VERSION = 1
 
+    @staticmethod
+    def async_get_options_flow(config_entry):
+        """Get the options flow for this handler."""
+        return ZwiftOptionsFlow(config_entry)
+
     async def async_step_user(self, user_input=None):
         """Handle the initial step."""
         errors = {}
@@ -42,11 +47,10 @@ class ZwiftConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     errors["base"] = "invalid_auth"
                 else:
                     # Parse players list from comma-separated string
-                    players_str = user_input.get(CONF_PLAYERS, "")
+                    players_str = user_input.pop(CONF_PLAYERS, "")
                     players = [
                         p.strip() for p in players_str.split(",") if p.strip()
                     ]
-                    user_input[CONF_PLAYERS] = players
 
                     await self.async_set_unique_id(username.lower())
                     self._abort_if_unique_id_configured()
@@ -54,6 +58,10 @@ class ZwiftConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     return self.async_create_entry(
                         title=f"Zwift ({username})",
                         data=user_input,
+                        options={
+                            CONF_PLAYERS: players,
+                            CONF_INCLUDE_SELF: user_input.pop(CONF_INCLUDE_SELF, True),
+                        },
                     )
             except Exception:
                 _LOGGER.exception("Error connecting to Zwift")
@@ -76,18 +84,66 @@ class ZwiftConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_import(self, import_data):
         """Handle import from YAML configuration."""
-        # Convert players list to comma-separated for unique_id check
         username = import_data[CONF_USERNAME]
         await self.async_set_unique_id(username.lower())
         self._abort_if_unique_id_configured()
 
         # Ensure players is a list
-        players = import_data.get(CONF_PLAYERS, [])
+        players = import_data.pop(CONF_PLAYERS, [])
         if isinstance(players, str):
             players = [p.strip() for p in players.split(",") if p.strip()]
-        import_data[CONF_PLAYERS] = players
+        include_self = import_data.pop(CONF_INCLUDE_SELF, True)
 
         return self.async_create_entry(
             title=f"Zwift ({username})",
             data=import_data,
+            options={
+                CONF_PLAYERS: players,
+                CONF_INCLUDE_SELF: include_self,
+            },
+        )
+
+
+class ZwiftOptionsFlow(config_entries.OptionsFlow):
+    """Handle Zwift options (manage tracked players)."""
+
+    def __init__(self, config_entry):
+        self._config_entry = config_entry
+
+    async def async_step_init(self, user_input=None):
+        """Manage the options."""
+        if user_input is not None:
+            players_str = user_input.get(CONF_PLAYERS, "")
+            players = [
+                p.strip() for p in players_str.split(",") if p.strip()
+            ]
+            return self.async_create_entry(
+                title="",
+                data={
+                    CONF_PLAYERS: players,
+                    CONF_INCLUDE_SELF: user_input.get(CONF_INCLUDE_SELF, True),
+                },
+            )
+
+        current_players = self._config_entry.options.get(CONF_PLAYERS, [])
+        current_include_self = self._config_entry.options.get(CONF_INCLUDE_SELF, True)
+
+        options_schema = vol.Schema(
+            {
+                vol.Optional(
+                    CONF_PLAYERS,
+                    description={
+                        "suggested_value": ", ".join(str(p) for p in current_players),
+                    },
+                ): str,
+                vol.Optional(
+                    CONF_INCLUDE_SELF,
+                    default=current_include_self,
+                ): bool,
+            }
+        )
+
+        return self.async_show_form(
+            step_id="init",
+            data_schema=options_schema,
         )

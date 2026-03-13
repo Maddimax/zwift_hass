@@ -19,5 +19,17 @@
         "abort": {
             "already_configured": "This Zwift account is already configured"
         }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "Zwift Players",
+                "description": "Manage the players to track.",
+                "data": {
+                    "players": "Player IDs (comma-separated)",
+                    "include_self": "Include own profile"
+                }
+            }
+        }
     }
 }

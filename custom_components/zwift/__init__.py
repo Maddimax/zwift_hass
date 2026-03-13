@@ -9,6 +9,7 @@ import voluptuous as vol
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_NAME, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.event import async_call_later
 from homeassistant.helpers.dispatcher import dispatcher_send
 
@@ -32,7 +33,7 @@ from zwift.error import RequestException
 
 _LOGGER = logging.getLogger(__name__)
 
-PLATFORMS = ["sensor"]
+PLATFORMS = ["image", "sensor"]
 
 CONFIG_SCHEMA = vol.Schema(
     {
@@ -72,8 +73,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up Zwift from a config entry."""
     username = entry.data[CONF_USERNAME]
     password = entry.data[CONF_PASSWORD]
-    players = entry.data.get(CONF_PLAYERS, [])
-    include_self = entry.data.get(CONF_INCLUDE_SELF, True)
+    # Players and include_self live in options so they can be changed later
+    players = entry.options.get(CONF_PLAYERS, entry.data.get(CONF_PLAYERS, []))
+    include_self = entry.options.get(CONF_INCLUDE_SELF, entry.data.get(CONF_INCLUDE_SELF, True))
     update_interval_sec = entry.data.get(CONF_UPDATE_INTERVAL, 15)
     update_interval = timedelta(seconds=update_interval_sec)
 
@@ -103,8 +105,22 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     hass.data.setdefault(DOMAIN, {})
     hass.data[DOMAIN][entry.entry_id] = zwift_data
 
+    # Remove devices for players that are no longer tracked
+    current_player_ids = {(DOMAIN, str(pid)) for pid in zwift_data.players}
+    device_registry = dr.async_get(hass)
+    for device in dr.async_entries_for_config_entry(device_registry, entry.entry_id):
+        if not device.identifiers & current_player_ids:
+            device_registry.async_remove_device(device.id)
+
+    entry.async_on_unload(entry.add_update_listener(_async_update_listener))
+
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True
+
+
+async def _async_update_listener(hass: HomeAssistant, entry: ConfigEntry):
+    """Reload the config entry when options change."""
+    await hass.config_entries.async_reload(entry.entry_id)
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
@@ -176,6 +192,10 @@ class ZwiftPlayerData:
     @property
     def runprogress(self):
         return self.player_profile.get("runProgress", None)
+
+    @property
+    def image_src(self):
+        return self.player_profile.get("imageSrc", None)
 
 
 class ZwiftData:
