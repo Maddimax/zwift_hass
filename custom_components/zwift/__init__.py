@@ -143,7 +143,10 @@ class ZwiftPlayerData:
 
     @property
     def friendly_player_id(self):
-        return self.player_profile.get("firstName") or self.player_id
+        first = self.player_profile.get("firstName", "")
+        last = self.player_profile.get("lastName", "")
+        full_name = f"{first} {last}".strip()
+        return full_name or self.player_id
 
     @property
     def online(self):

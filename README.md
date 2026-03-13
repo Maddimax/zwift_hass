@@ -13,13 +13,15 @@ Installation
 1. Install this from HACS
 2. Restart Home Assistant
 3. Go to **Settings → Devices & Services → Add Integration** and search for **Zwift Sensor**
-4. Enter your Zwift credentials and optionally provide player IDs (comma-separated) to track
-5. Your own player will be included automatically unless you uncheck "Include own profile"
+4. Enter your Zwift credentials
+5. The integration will fetch your Zwift followees and present them as a list — select the players you want to track
+6. You can also add players by entering a custom player ID in the selection field
+7. Your own player will be included automatically unless you uncheck "Include own profile"
 
 Devices & Entities
 ===
 
-Each tracked player is represented as a **device** in Home Assistant. The device page includes:
+Each tracked player is represented as a **device** in Home Assistant, named using the player's full name (first and last) from their Zwift profile. The device page includes:
 
 * A link to the player's Zwift profile at `zwift.com/athlete/<player_id>`
 * A **Profile Picture** image entity
@@ -48,7 +50,9 @@ To add or remove tracked players after initial setup:
 
 1. Go to **Settings → Devices & Services → Zwift Sensor**
 2. Click **Configure**
-3. Edit the player IDs (comma-separated) and click Submit
+3. Your current followees will be fetched and shown as a selectable list — check or uncheck players as needed
+4. You can also add custom player IDs that are not in your followees list
+5. Click Submit
 
 The integration will reload automatically and devices for removed players will be cleaned up.
 

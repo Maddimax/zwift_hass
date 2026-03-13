@@ -3,11 +3,17 @@
         "step": {
             "user": {
                 "title": "Zwift Account",
-                "description": "Enter your Zwift credentials. Optionally provide player IDs (comma-separated) to track.",
+                "description": "Enter your Zwift credentials.",
                 "data": {
                     "username": "Username",
-                    "password": "Password",
-                    "players": "Player IDs (comma-separated, optional)",
+                    "password": "Password"
+                }
+            },
+            "select_players": {
+                "title": "Select Players",
+                "description": "Choose players to track from your followees, or add custom player IDs.",
+                "data": {
+                    "players": "Players to track",
                     "include_self": "Include own profile"
                 }
             }
@@ -24,9 +30,9 @@
         "step": {
             "init": {
                 "title": "Zwift Players",
-                "description": "Manage the players to track.",
+                "description": "Select players to track from your followees, or add custom player IDs.",
                 "data": {
-                    "players": "Player IDs (comma-separated)",
+                    "players": "Players to track",
                     "include_self": "Include own profile"
                 }
             }
