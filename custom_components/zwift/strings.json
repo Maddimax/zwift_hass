@@ -1,0 +1,23 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "Zwift Account",
+                "description": "Enter your Zwift credentials. Optionally provide player IDs (comma-separated) to track.",
+                "data": {
+                    "username": "Username",
+                    "password": "Password",
+                    "players": "Player IDs (comma-separated, optional)",
+                    "include_self": "Include own profile"
+                }
+            }
+        },
+        "error": {
+            "invalid_auth": "Invalid authentication",
+            "cannot_connect": "Failed to connect to Zwift"
+        },
+        "abort": {
+            "already_configured": "This Zwift account is already configured"
+        }
+    }
+}
