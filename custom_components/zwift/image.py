@@ -53,6 +53,7 @@ class ZwiftProfileImageEntity(ImageEntity):
             name=f"Zwift {self._player.friendly_player_id}",
             manufacturer="Zwift",
             entry_type=DeviceEntryType.SERVICE,
+            configuration_url=f"https://www.zwift.com/athlete/{self._player.player_id}",
         )
 
     @property
