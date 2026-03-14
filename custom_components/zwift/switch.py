@@ -31,6 +31,8 @@ class ZwiftPollingSwitch(SwitchEntity, RestoreEntity):
 
     _attr_has_entity_name = True
 
+    _attr_translation_key = "enable_polling"
+
     def __init__(self, player, entry):
         self._player = player
         self._entry = entry
@@ -41,10 +43,6 @@ class ZwiftPollingSwitch(SwitchEntity, RestoreEntity):
         last_state = await self.async_get_last_state()
         if last_state and last_state.state == "off":
             self._player.polling_enabled = False
-
-    @property
-    def name(self):
-        return "Update Polling"
 
     @property
     def icon(self):

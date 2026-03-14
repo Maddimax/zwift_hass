@@ -46,6 +46,11 @@
         }
     },
     "entity": {
+        "switch": {
+            "enable_polling": {
+                "name": "Enable polling"
+            }
+        },
         "sensor": {
             "powerzonename": {
                 "state": {
