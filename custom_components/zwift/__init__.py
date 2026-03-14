@@ -33,7 +33,7 @@ sys.modules["zwift.zwift_messages_pb2"] = new_pb2
 from zwift import Client as ZwiftClient
 from zwift.error import RequestException
 
-PLATFORMS = ["image", "light", "sensor"]
+PLATFORMS = ["image", "light", "sensor", "switch"]
 
 CONFIG_SCHEMA = vol.Schema(
     {
@@ -136,6 +136,7 @@ class ZwiftPlayerData:
         self._player_id = player_id
         self.data = {}
         self.player_profile = {}
+        self.polling_enabled = True
 
     @property
     def player_id(self):
@@ -338,6 +339,9 @@ class ZwiftData:
         if self._client:
             world = self._client.get_world(1)
             for player_id in self.players:
+                if not self.players[player_id].polling_enabled:
+                    _LOGGER.debug("Skipping update for player {} because polling is disabled".format(player_id))
+                    continue
                 data = {}
                 online_player = {}
                 try:
