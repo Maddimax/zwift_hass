@@ -262,12 +262,7 @@ class ZwiftPlayerData:
 
     @property
     def age(self):
-        dob = self.dob
-        if dob:
-            from datetime import date
-            today = date.today()
-            return today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
-        return None
+        return self.player_profile.get("age", None)
 
     @property
     def createdon(self):

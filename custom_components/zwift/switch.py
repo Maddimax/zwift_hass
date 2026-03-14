@@ -47,7 +47,7 @@ class ZwiftPollingSwitch(SwitchEntity, RestoreEntity):
 
     @property
     def icon(self):
-        return "mdi:update" if self.is_on else "mdi:update-lock"
+        return "mdi:update" if self.is_on else "mdi:cancel"
 
     @property
     def device_info(self) -> DeviceInfo:
