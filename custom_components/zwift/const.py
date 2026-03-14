@@ -63,7 +63,7 @@ SENSOR_TYPES = {
     "runprogress": {"name": "Run Progress", "unit": "%", "icon": "mdi:transfer-right"},
     "totaldistance": {"name": "Total Distance", "unit": "m", "device_class": "distance", "suggested_unit_metric": "km", "suggested_unit_imperial": "mi", "icon": "mdi:map-marker-distance"},
     "totaldistanceclimbed": {"name": "Total Distance Climbed", "unit": "m", "device_class": "distance", "suggested_unit_imperial": "ft", "icon": "mdi:elevation-rise"},
-    "totaltimeinminutes": {"name": "Total Time In Minutes", "unit": "min", "device_class": "duration", "icon": "mdi:clock-outline"},
+    "totaltimeinminutes": {"name": "Total Time", "unit": "min", "device_class": "duration", "suggested_unit_metric": "d", "suggested_unit_imperial": "d", "icon": "mdi:clock-outline"},
     "totalgold": {"name": "Drops", "icon": "mdi:water"},
     "streakscurrentlength": {"name": "Current Streak", "unit": "d", "device_class": "duration", "icon": "mdi:fire"},
     "streaksmaxlength": {"name": "Max Streak", "unit": "d", "device_class": "duration", "icon": "mdi:trophy"},
