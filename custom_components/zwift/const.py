@@ -49,7 +49,7 @@ ZWIFT_WORLDS = {
 }
 
 SENSOR_TYPES = {
-    "online": {"name": "Online", "binary": True, "device_class": "connectivity", "icon": "mdi:radio-tower"},
+    "online": {"name": "Online", "entity_class": "ZwiftOnlineSensorEntity", "device_class": "connectivity", "icon": "mdi:radio-tower"},
     "hr": {"name": "Heart Rate", "unit": "bpm", "icon": "mdi:heart-pulse"},
     "speed": {"name": "Speed", "unit": "mph", "unit_metric": "kmh", "icon": "mdi:speedometer"},
     "cadence": {"name": "Cadence", "unit": "rpm", "icon": "mdi:rotate-right"},
@@ -71,7 +71,7 @@ SENSOR_TYPES = {
     "racingcategory": {"name": "Racing Category", "icon": "mdi:format-list-numbered"},
     "ftp": {"name": "FTP", "unit": "W", "icon": "mdi:flash"},
     "powerzone": {"name": "Power Zone", "icon": "mdi:gauge"},
-    "powerzonename": {"name": "Power Zone Name", "icon": "mdi:gauge", "translation_key": "powerzonename"},
+    "powerzonename": {"name": "Power Zone Name", "icon": "mdi:gauge", "entity_class": "ZwiftPowerZoneSensorEntity"},
 }
 
 POWER_ZONE_OPTIONS = [
