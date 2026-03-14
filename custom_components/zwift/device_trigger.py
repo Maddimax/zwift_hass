@@ -63,7 +63,7 @@ async def async_attach_trigger(
     player_id = None
     for identifier in device.identifiers:
         if identifier[0] == DOMAIN:
-            player_id = identifier[1]
+            player_id = int(identifier[1])
             break
 
     event_config = event_trigger.TRIGGER_SCHEMA(
