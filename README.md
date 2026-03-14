@@ -3,7 +3,7 @@ Custom component repository for HACS for the Zwift sensor!
 https://community.home-assistant.io/t/zwift-sensor-component-feedback-and-testers-needed/87512
 
 
-===========
+===
 
 This adds the component to include Zwift sensors in your Home Assistant instance!
 

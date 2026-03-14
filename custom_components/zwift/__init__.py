@@ -242,6 +242,25 @@ class ZwiftPlayerData:
         return self.player_profile.get("ftp", None)
 
     @property
+    def weight(self):
+        return self.player_profile.get("weight", None)
+
+    @property
+    def height(self):
+        return self.player_profile.get("height", None)
+
+    @property
+    def dob(self):
+        dob_str = self.player_profile.get("dob", None)
+        if dob_str:
+            from datetime import datetime
+            try:
+                return datetime.strptime(dob_str, "%m/%d/%Y").date()
+            except (ValueError, TypeError):
+                return None
+        return None
+
+    @property
     def power_zone(self):
         """Return power zone info based on current power and FTP."""
         ftp = self.ftp
