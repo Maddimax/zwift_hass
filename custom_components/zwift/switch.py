@@ -5,6 +5,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.restore_state import RestoreEntity
 
 from .const import DOMAIN
 
@@ -25,7 +26,7 @@ async def async_setup_entry(
     async_add_entities(entities)
 
 
-class ZwiftPollingSwitch(SwitchEntity):
+class ZwiftPollingSwitch(SwitchEntity, RestoreEntity):
     """Switch to enable or disable Zwift update polling for a player."""
 
     _attr_has_entity_name = True
@@ -34,6 +35,12 @@ class ZwiftPollingSwitch(SwitchEntity):
         self._player = player
         self._entry = entry
         self._attr_unique_id = f"zwift_polling_{player.player_id}"
+
+    async def async_added_to_hass(self):
+        """Restore last known state on startup."""
+        last_state = await self.async_get_last_state()
+        if last_state and last_state.state == "off":
+            self._player.polling_enabled = False
 
     @property
     def name(self):
