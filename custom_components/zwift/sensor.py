@@ -11,6 +11,7 @@ from homeassistant.const import MATCH_ALL
 from .const import (
     _LOGGER,
     DOMAIN,
+    POWER_ZONE_OPTIONS,
     SENSOR_TYPES,
     SIGNAL_ZWIFT_UPDATE,
     ZWIFT_IGNORED_PROFILE_ATTRIBUTES,
@@ -50,6 +51,10 @@ class ZwiftSensorEntity(Entity):
         self._player = player
         self._type = sensor_type
         self._entry = entry
+        if SENSOR_TYPES[self._type].get("translation_key"):
+            self._attr_translation_key = SENSOR_TYPES[self._type]["translation_key"]
+            self._attr_options = POWER_ZONE_OPTIONS
+            self._attr_device_class = "enum"
         self._attr_unique_id = "zwift_{}_{}".format(
             SENSOR_TYPES[self._type]["name"], self._player.player_id
         ).replace(" ", "").lower()

@@ -71,5 +71,15 @@ SENSOR_TYPES = {
     "racingcategory": {"name": "Racing Category", "icon": "mdi:format-list-numbered"},
     "ftp": {"name": "FTP", "unit": "W", "icon": "mdi:flash"},
     "powerzone": {"name": "Power Zone", "icon": "mdi:gauge"},
-    "powerzonename": {"name": "Power Zone Name", "icon": "mdi:gauge"},
+    "powerzonename": {"name": "Power Zone Name", "icon": "mdi:gauge", "translation_key": "powerzonename"},
 }
+
+POWER_ZONE_OPTIONS = [
+    "active_recovery",
+    "endurance",
+    "tempo",
+    "threshold",
+    "vo2max",
+    "anaerobic",
+    "neuromuscular",
+]

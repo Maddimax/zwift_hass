@@ -247,17 +247,17 @@ class ZwiftPlayerData:
             return None
         ratio = power / ftp
         zones = [
-            (0.55, 1, "Active Recovery", "#808080"),
-            (0.75, 2, "Endurance", "#3399FF"),
-            (0.90, 3, "Tempo", "#00CC00"),
-            (1.05, 4, "Threshold", "#FFD700"),
-            (1.20, 5, "VO2max", "#FF8C00"),
-            (1.50, 6, "Anaerobic", "#FF0000"),
+            (0.55, 1, "active_recovery", "#808080"),
+            (0.75, 2, "endurance", "#3399FF"),
+            (0.90, 3, "tempo", "#00CC00"),
+            (1.05, 4, "threshold", "#FFD700"),
+            (1.20, 5, "vo2max", "#FF8C00"),
+            (1.50, 6, "anaerobic", "#FF0000"),
         ]
         for threshold, zone, name, color in zones:
             if ratio < threshold:
                 return (zone, name, color)
-        return (7, "Neuromuscular", "#800080")
+        return (7, "neuromuscular", "#800080")
 
     @property
     def powerzone(self):

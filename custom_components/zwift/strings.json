@@ -42,5 +42,20 @@
         "trigger_type": {
             "ride_on": "Ride On received"
         }
+    },
+    "entity": {
+        "sensor": {
+            "powerzonename": {
+                "state": {
+                    "active_recovery": "Active Recovery",
+                    "endurance": "Endurance",
+                    "tempo": "Tempo",
+                    "threshold": "Threshold",
+                    "vo2max": "VO2max",
+                    "anaerobic": "Anaerobic",
+                    "neuromuscular": "Neuromuscular"
+                }
+            }
+        }
     }
 }
