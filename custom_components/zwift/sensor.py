@@ -32,9 +32,12 @@ async def async_setup_entry(
     }
 
     entities = []
+    self_player_id = zwift_data._profile.get("id") if zwift_data._profile else None
     for player_id in zwift_data.players:
         player = zwift_data.players[player_id]
         for variable in SENSOR_TYPES:
+            if SENSOR_TYPES[variable].get("self_only") and player_id != self_player_id:
+                continue
             entity_class = entity_classes.get(
                 SENSOR_TYPES[variable].get("entity_class"), ZwiftSensorEntity
             )

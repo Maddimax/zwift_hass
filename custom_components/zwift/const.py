@@ -72,7 +72,7 @@ SENSOR_TYPES = {
     "ftp": {"name": "FTP", "unit": "W", "device_class": "power", "icon": "mdi:flash"},
     "weight": {"name": "Weight", "unit": "g", "device_class": "weight", "suggested_unit_metric": "kg", "suggested_unit_imperial": "lb", "icon": "mdi:weight"},
     "height": {"name": "Height", "unit": "mm", "device_class": "distance", "suggested_unit_metric": "m", "suggested_unit_imperial": "ft", "icon": "mdi:human-male-height"},
-    "dob": {"name": "Date of Birth", "device_class": "date", "icon": "mdi:cake-variant"},
+    "dob": {"name": "Date of Birth", "device_class": "date", "self_only": True, "icon": "mdi:cake-variant"},
     "powerzone": {"name": "Power Zone", "icon": "mdi:gauge"},
     "powerzonename": {"name": "Power Zone Name", "icon": "mdi:gauge", "device_class": "enum", "entity_class": "ZwiftPowerZoneSensorEntity"},
 }
