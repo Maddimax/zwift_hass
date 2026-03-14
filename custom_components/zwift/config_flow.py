@@ -1,6 +1,5 @@
 """Config flow for Zwift integration."""
 
-import logging
 import sys
 
 import voluptuous as vol
@@ -8,7 +7,7 @@ from homeassistant import config_entries
 from homeassistant.const import CONF_NAME, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.helpers.selector import SelectSelector, SelectSelectorConfig, SelectSelectorMode, SelectOptionDict
 
-from .const import CONF_INCLUDE_SELF, CONF_PLAYERS, DOMAIN
+from .const import _LOGGER, CONF_INCLUDE_SELF, CONF_PLAYERS, DOMAIN
 
 # Patch zwift protobuf
 from .zwift_patch import zwift_messages_pb2 as new_pb2
@@ -16,8 +15,6 @@ from .zwift_patch import zwift_messages_pb2 as new_pb2
 sys.modules["zwift.zwift_messages_pb2"] = new_pb2
 
 from zwift import Client as ZwiftClient
-
-_LOGGER = logging.getLogger(__name__)
 
 
 def _fetch_followees(client):

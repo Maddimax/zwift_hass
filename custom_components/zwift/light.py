@@ -1,7 +1,5 @@
 """Zwift light platform — power zone color indicator."""
 
-import logging
-
 from homeassistant.components.light import (
     ColorMode,
     LightEntity,
@@ -11,9 +9,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN, SIGNAL_ZWIFT_UPDATE
-
-_LOGGER = logging.getLogger(__name__)
+from .const import _LOGGER, DOMAIN, SIGNAL_ZWIFT_UPDATE
 
 
 def hex_to_rgb(hex_color: str) -> tuple[int, int, int]:

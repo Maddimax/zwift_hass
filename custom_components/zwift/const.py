@@ -1,5 +1,9 @@
 """Constants for the Zwift integration."""
 
+import logging
+
+_LOGGER = logging.getLogger('zwift')
+
 DOMAIN = "zwift"
 
 CONF_PLAYERS = "players"

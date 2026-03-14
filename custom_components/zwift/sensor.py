@@ -1,7 +1,5 @@
 """Zwift sensor platform."""
 
-import logging
-
 from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -10,13 +8,12 @@ from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import (
+    _LOGGER,
     DOMAIN,
     SENSOR_TYPES,
     SIGNAL_ZWIFT_UPDATE,
     ZWIFT_IGNORED_PROFILE_ATTRIBUTES,
 )
-
-_LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(

@@ -1,6 +1,5 @@
 """Zwift image platform — exposes player profile picture."""
 
-import logging
 from datetime import datetime
 
 from homeassistant.components.image import ImageEntity
@@ -10,9 +9,7 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN, SIGNAL_ZWIFT_UPDATE
-
-_LOGGER = logging.getLogger(__name__)
+from .const import _LOGGER, DOMAIN, SIGNAL_ZWIFT_UPDATE
 
 
 async def async_setup_entry(

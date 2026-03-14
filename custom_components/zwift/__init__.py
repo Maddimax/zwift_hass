@@ -1,6 +1,5 @@
 """The Zwift integration."""
 
-import logging
 import sys
 from datetime import timedelta
 
@@ -16,6 +15,7 @@ from homeassistant.helpers.event import async_call_later
 from homeassistant.helpers.dispatcher import dispatcher_send
 
 from .const import (
+    _LOGGER,
     CONF_INCLUDE_SELF,
     CONF_PLAYERS,
     CONF_UPDATE_INTERVAL,
@@ -32,8 +32,6 @@ sys.modules["zwift.zwift_messages_pb2"] = new_pb2
 
 from zwift import Client as ZwiftClient
 from zwift.error import RequestException
-
-_LOGGER = logging.getLogger(__name__)
 
 PLATFORMS = ["image", "light", "sensor"]
 
