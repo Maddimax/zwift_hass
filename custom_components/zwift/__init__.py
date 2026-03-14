@@ -261,6 +261,26 @@ class ZwiftPlayerData:
         return None
 
     @property
+    def age(self):
+        dob = self.dob
+        if dob:
+            from datetime import date
+            today = date.today()
+            return today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+        return None
+
+    @property
+    def createdon(self):
+        created_str = self.player_profile.get("createdOn", None)
+        if created_str:
+            from datetime import datetime
+            try:
+                return datetime.fromisoformat(created_str)
+            except (ValueError, TypeError):
+                return None
+        return None
+
+    @property
     def power_zone(self):
         """Return power zone info based on current power and FTP."""
         ftp = self.ftp

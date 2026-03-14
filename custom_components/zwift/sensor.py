@@ -3,10 +3,10 @@
 from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity, SensorStateClass
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import EntityCategory, MATCH_ALL
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.const import MATCH_ALL
 
 from .const import (
     _LOGGER,
@@ -97,6 +97,14 @@ class ZwiftSensorEntity(SensorEntity):
     def device_class(self):
         """Return the device class of the sensor."""
         return self._sensor_config.get("device_class")
+
+    @property
+    def entity_category(self):
+        """Return the entity category."""
+        category = self._sensor_config.get("entity_category")
+        if category:
+            return EntityCategory(category)
+        return None
 
     @property
     def state_class(self):
