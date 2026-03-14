@@ -1,6 +1,7 @@
 """Zwift sensor platform."""
 
 from homeassistant.components.binary_sensor import BinarySensorEntity
+from homeassistant.components.sensor import SensorStateClass
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
@@ -84,6 +85,16 @@ class ZwiftSensorEntity(Entity):
     def icon(self):
         return self._sensor_config.get("icon")
 
+    @property
+    def device_class(self):
+        """Return the device class of the sensor."""
+        return self._sensor_config.get("device_class")
+
+    @property
+    def state_class(self):
+        """Return the state class of the sensor."""
+        return self._sensor_config.get("state_class")
+
     async def async_added_to_hass(self):
         """Register update signal handler."""
 
@@ -121,8 +132,3 @@ class ZwiftOnlineSensorEntity(ZwiftSensorEntity, BinarySensorEntity):
     def is_on(self):
         """Return true if the binary sensor is on."""
         return self._state
-
-    @property
-    def device_class(self):
-        """Return the device class of the binary sensor."""
-        return self._sensor_config.get("device_class")
