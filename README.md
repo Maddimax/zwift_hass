@@ -7,11 +7,16 @@ https://community.home-assistant.io/t/zwift-sensor-component-feedback-and-tester
 
 This adds the component to include Zwift sensors in your Home Assistant instance!
 
-Installation
+Installation via HACS
 ===
 
-1. Install this from HACS
+[![Open your Home Assistant instance and adding repository to HACS.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=snicker&repository=zwift_hass&category=integration)
+
+1. Install this from HACS 
 2. Restart Home Assistant
+
+[![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=zwift_hass)
+
 3. Go to **Settings → Devices & Services → Add Integration** and search for **Zwift Sensor**
 4. Enter your Zwift credentials
 5. The integration will fetch your Zwift followees and present them as a list — select the players you want to track
