@@ -77,7 +77,13 @@ SENSOR_TYPES = {
     "createdon": {"name": "Account Created", "device_class": "timestamp", "entity_category": "diagnostic", "icon": "mdi:calendar-plus"},
     "powerzone": {"name": "Power Zone", "icon": "mdi:gauge"},
     "powerzonename": {"name": "Power Zone Name", "icon": "mdi:gauge", "device_class": "enum", "entity_class": "ZwiftPowerZoneSensorEntity"},
+    "sport": {"name": "Sport", "icon": "mdi:bike", "device_class": "enum", "entity_class": "ZwiftSportSensorEntity"},
 }
+
+SPORT_OPTIONS = [
+    "cycling",
+    "running",
+]
 
 POWER_ZONE_OPTIONS = [
     "active_recovery",

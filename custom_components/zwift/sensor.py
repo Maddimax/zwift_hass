@@ -14,6 +14,7 @@ from .const import (
     POWER_ZONE_OPTIONS,
     SENSOR_TYPES,
     SIGNAL_ZWIFT_UPDATE,
+    SPORT_OPTIONS,
     ZWIFT_IGNORED_PROFILE_ATTRIBUTES,
 )
 
@@ -29,6 +30,7 @@ async def async_setup_entry(
     entity_classes = {
         "ZwiftOnlineSensorEntity": ZwiftOnlineSensorEntity,
         "ZwiftPowerZoneSensorEntity": ZwiftPowerZoneSensorEntity,
+        "ZwiftSportSensorEntity": ZwiftSportSensorEntity,
     }
 
     entities = []
@@ -128,6 +130,17 @@ class ZwiftPowerZoneSensorEntity(ZwiftSensorEntity):
     _attr_translation_key = "powerzonename"
     _attr_options = POWER_ZONE_OPTIONS
     _attr_device_class = SensorDeviceClass.ENUM
+
+class ZwiftSportSensorEntity(ZwiftSensorEntity):
+    _attr_translation_key = "sport"
+    _attr_options = SPORT_OPTIONS
+    _attr_device_class = SensorDeviceClass.ENUM
+
+    @property
+    def icon(self):
+        if self.native_value == "running":
+            return "mdi:run"
+        return "mdi:bike"
 
 class ZwiftOnlineSensorEntity(ZwiftSensorEntity, BinarySensorEntity):
     _unrecorded_attributes = frozenset({MATCH_ALL})

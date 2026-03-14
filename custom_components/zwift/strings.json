@@ -67,6 +67,12 @@
                     "anaerobic": "Anaerobic",
                     "neuromuscular": "Neuromuscular"
                 }
+            },
+            "sport": {
+                "state": {
+                    "cycling": "Cycling",
+                    "running": "Running"
+                }
             }
         }
     }

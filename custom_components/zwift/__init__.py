@@ -307,6 +307,12 @@ class ZwiftPlayerData:
         return info[1] if info else None
 
     @property
+    def sport(self):
+        activity = self.player_profile.get("latest_activity", {})
+        sport = activity.get("sport", None)
+        return sport.lower() if sport else None
+
+    @property
     def image_src(self):
         return self.player_profile.get("imageSrc", None)
 
