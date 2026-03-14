@@ -6,6 +6,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.const import MATCH_ALL
 
 from .const import (
     _LOGGER,
@@ -105,8 +106,9 @@ class ZwiftSensorEntity(Entity):
             async_update_state,
         )
 
-
 class ZwiftBinarySensorEntity(ZwiftSensorEntity, BinarySensorEntity):
+    _unrecorded_attributes = frozenset({MATCH_ALL})
+
     @property
     def is_on(self):
         """Return true if the binary sensor is on."""
