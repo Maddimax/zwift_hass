@@ -53,9 +53,10 @@ class ZwiftSensorEntity(Entity):
         self._zwift_data = zwift_data
         self._player = player
         self._type = sensor_type
+        self._sensor_config = SENSOR_TYPES[sensor_type]
         self._entry = entry
         self._attr_unique_id = "zwift_{}_{}".format(
-            SENSOR_TYPES[self._type]["name"], self._player.player_id
+            self._sensor_config["name"], self._player.player_id
         ).replace(" ", "").lower()
 
     @property
@@ -65,7 +66,7 @@ class ZwiftSensorEntity(Entity):
     @property
     def name(self):
         """Return the name of the sensor."""
-        return SENSOR_TYPES[self._type].get("name")
+        return self._sensor_config.get("name")
 
     @property
     def state(self):
@@ -76,14 +77,12 @@ class ZwiftSensorEntity(Entity):
     def unit_of_measurement(self):
         """Return the unit this state is expressed in."""
         if self._zwift_data.is_metric:
-            return SENSOR_TYPES[self._type].get("unit_metric") or SENSOR_TYPES[
-                self._type
-            ].get("unit")
-        return SENSOR_TYPES[self._type].get("unit")
+            return self._sensor_config.get("unit_metric") or self._sensor_config.get("unit")
+        return self._sensor_config.get("unit")
 
     @property
     def icon(self):
-        return SENSOR_TYPES[self._type].get("icon")
+        return self._sensor_config.get("icon")
 
     async def async_added_to_hass(self):
         """Register update signal handler."""
@@ -126,4 +125,4 @@ class ZwiftOnlineSensorEntity(ZwiftSensorEntity, BinarySensorEntity):
     @property
     def device_class(self):
         """Return the device class of the binary sensor."""
-        return SENSOR_TYPES[self._type].get("device_class")
+        return self._sensor_config.get("device_class")
