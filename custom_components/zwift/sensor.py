@@ -1,11 +1,10 @@
 """Zwift sensor platform."""
 
 from homeassistant.components.binary_sensor import BinarySensorEntity
-from homeassistant.components.sensor import SensorStateClass
+from homeassistant.components.sensor import SensorDeviceClass, SensorEntity, SensorStateClass
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
-from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.const import MATCH_ALL
 
@@ -46,7 +45,7 @@ async def async_setup_entry(
     async_add_entities(entities, True)
 
 
-class ZwiftSensorEntity(Entity):
+class ZwiftSensorEntity(SensorEntity):
     _attr_has_entity_name = True
 
     def __init__(self, zwift_data, player, sensor_type, entry):
@@ -70,15 +69,13 @@ class ZwiftSensorEntity(Entity):
         return self._sensor_config.get("name")
 
     @property
-    def state(self):
+    def native_value(self):
         """Return the state of the sensor."""
         return getattr(self._player, self._type)
 
     @property
-    def unit_of_measurement(self):
+    def native_unit_of_measurement(self):
         """Return the unit this state is expressed in."""
-        if self._zwift_data.is_metric:
-            return self._sensor_config.get("unit_metric") or self._sensor_config.get("unit")
         return self._sensor_config.get("unit")
 
     @property
@@ -111,7 +108,7 @@ class ZwiftSensorEntity(Entity):
 class ZwiftPowerZoneSensorEntity(ZwiftSensorEntity):
     _attr_translation_key = "powerzonename"
     _attr_options = POWER_ZONE_OPTIONS
-    _attr_device_class = "enum"
+    _attr_device_class = SensorDeviceClass.ENUM
 
 class ZwiftOnlineSensorEntity(ZwiftSensorEntity, BinarySensorEntity):
     _unrecorded_attributes = frozenset({MATCH_ALL})
