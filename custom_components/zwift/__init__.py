@@ -76,7 +76,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     # Players and include_self live in options so they can be changed later
     players = entry.options.get(CONF_PLAYERS, entry.data.get(CONF_PLAYERS, []))
     include_self = entry.options.get(CONF_INCLUDE_SELF, entry.data.get(CONF_INCLUDE_SELF, True))
-    update_interval_sec = entry.data.get(CONF_UPDATE_INTERVAL, 15)
+    update_interval_sec = entry.options.get(
+        CONF_UPDATE_INTERVAL, entry.data.get(CONF_UPDATE_INTERVAL, 15)
+    )
     update_interval = timedelta(seconds=update_interval_sec)
 
     zwift_data = ZwiftData(update_interval, username, password, players, hass)

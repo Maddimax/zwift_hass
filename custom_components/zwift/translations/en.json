@@ -14,7 +14,8 @@
                 "description": "Choose players to track from your followees, or add custom player IDs.",
                 "data": {
                     "players": "Players to track",
-                    "include_self": "Include own profile"
+                    "include_self": "Include own profile",
+                    "update_interval": "Update interval (seconds)"
                 }
             }
         },
@@ -33,7 +34,8 @@
                 "description": "Select players to track from your followees, or add custom player IDs.",
                 "data": {
                     "players": "Players to track",
-                    "include_self": "Include own profile"
+                    "include_self": "Include own profile",
+                    "update_interval": "Update interval (seconds)"
                 }
             }
         }
