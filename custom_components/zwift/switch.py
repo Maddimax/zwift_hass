@@ -2,6 +2,7 @@
 
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -30,7 +31,7 @@ class ZwiftPollingSwitch(SwitchEntity, RestoreEntity):
     """Switch to enable or disable Zwift update polling for a player."""
 
     _attr_has_entity_name = True
-
+    _attr_entity_category = EntityCategory.CONFIG
     _attr_translation_key = "enable_polling"
 
     def __init__(self, player, entry):
