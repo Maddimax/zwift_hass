@@ -79,6 +79,14 @@ class ZwiftSensorEntity(SensorEntity):
         return self._sensor_config.get("unit")
 
     @property
+    def suggested_unit_of_measurement(self):
+        """Return suggested unit based on player's metric preference."""
+        use_metric = self._player.player_profile.get("useMetric", True)
+        if use_metric:
+            return self._sensor_config.get("suggested_unit_metric")
+        return self._sensor_config.get("suggested_unit_imperial")
+
+    @property
     def icon(self):
         return self._sensor_config.get("icon")
 
