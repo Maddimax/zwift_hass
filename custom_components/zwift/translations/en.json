@@ -46,6 +46,11 @@
         }
     },
     "entity": {
+        "button": {
+            "update": {
+                "name": "Update"
+            }
+        },
         "switch": {
             "enable_polling": {
                 "name": "Enable polling"
