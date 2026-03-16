@@ -62,15 +62,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     zwift_data = ZwiftData(username, password, players, hass)
     try:
-        await zwift_data._connect()
+        await zwift_data.connect()
     except Exception:
         _LOGGER.exception("Could not connect to Zwift")
         return False
 
     if include_self:
-        zwift_data.add_tracked_player(zwift_data._profile.get("id"))
+        zwift_data.add_tracked_player(zwift_data.profile.get("id"))
 
-    self_player_id = zwift_data._profile.get("id") if zwift_data._profile else None
+    self_player_id = zwift_data.profile.get("id") if zwift_data.profile else None
 
     coordinators = {}
     for player_id in zwift_data.players:

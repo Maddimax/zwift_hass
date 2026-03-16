@@ -80,23 +80,23 @@ class ZwiftPlayerCoordinator(DataUpdateCoordinator):
 
     async def _async_update_data(self):
         """Fetch data from Zwift for this player."""
-        if self.zwift_data._client is None:
-            await self.zwift_data._connect()
+        if not self.zwift_data.is_connected:
+            await self.zwift_data.connect()
 
         await self.zwift_data.update_player(self.player_id)
 
         player = self.player
 
         # Handle device name changes
-        if player._device_name_changed:
-            player._device_name_changed = False
+        if player.device_name_changed:
+            player.acknowledge_device_name_change()
             device_registry = dr.async_get(self.hass)
             device = device_registry.async_get_device(
                 identifiers={(DOMAIN, str(self.player_id))}
             )
             if device:
                 device_registry.async_update_device(
-                    device.id, name=player._last_device_name
+                    device.id, name=player.last_device_name
                 )
 
         # Adjust polling interval based on online status

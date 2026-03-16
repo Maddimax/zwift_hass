@@ -30,6 +30,20 @@ class ZwiftPlayerData:
         return self._player_id
 
     @property
+    def device_name_changed(self):
+        """Return whether the device name has changed since last check."""
+        return self._device_name_changed
+
+    def acknowledge_device_name_change(self):
+        """Clear the device name changed flag."""
+        self._device_name_changed = False
+
+    @property
+    def last_device_name(self):
+        """Return the most recent device name."""
+        return self._last_device_name
+
+    @property
     def friendly_player_id(self):
         first = self.player_profile.get("firstName", "")
         last = self.player_profile.get("lastName", "")
@@ -249,7 +263,8 @@ class ZwiftData:
             return self._profile.get("useMetric", False)
         return False
 
-    async def _connect(self):
+    async def connect(self):
+        """Connect to the Zwift API and fetch the user profile."""
         client = ZwiftClient(self.username, self.password)
         if await self.check_zwift_auth(client):
             self._client = client
@@ -257,6 +272,16 @@ class ZwiftData:
                 self._get_self_profile
             )
             return self._client
+
+    @property
+    def profile(self):
+        """Return the authenticated user's profile."""
+        return self._profile
+
+    @property
+    def is_connected(self):
+        """Return whether the client is connected."""
+        return self._client is not None
 
     def _get_self_profile(self):
         return self._client.get_profile().profile
@@ -363,7 +388,7 @@ class ZwiftData:
         player.player_profile = player_profile
         player.data = data
         new_device_name = f"Zwift {player.friendly_player_id}"
-        old_device_name = player._last_device_name
+        old_device_name = player.last_device_name
         if old_device_name is not None and old_device_name != new_device_name:
             player._device_name_changed = True
         player._last_device_name = new_device_name
