@@ -1,16 +1,11 @@
 """Zwift data fetching and player model."""
 
-import sys
 from datetime import timedelta
 
 from homeassistant.helpers.device_registry import DeviceEntryType
 from homeassistant.helpers.entity import DeviceInfo
 
-# Patch zwift protobuf before importing zwift
-from .zwift_patch import zwift_messages_pb2 as new_pb2
-
-sys.modules["zwift.zwift_messages_pb2"] = new_pb2
-
+import custom_components.zwift.zwift_patch  # noqa: F401 — applies protobuf patch
 from zwift import Client as ZwiftClient
 from zwift.error import RequestException
 

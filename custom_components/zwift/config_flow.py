@@ -1,7 +1,5 @@
 """Config flow for Zwift integration."""
 
-import sys
-
 import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.const import CONF_NAME, CONF_PASSWORD, CONF_USERNAME
@@ -9,11 +7,7 @@ from homeassistant.helpers.selector import SelectSelector, SelectSelectorConfig,
 
 from .const import _LOGGER, CONF_INCLUDE_SELF, CONF_PLAYERS, DOMAIN
 
-# Patch zwift protobuf
-from .zwift_patch import zwift_messages_pb2 as new_pb2
-
-sys.modules["zwift.zwift_messages_pb2"] = new_pb2
-
+import custom_components.zwift.zwift_patch  # noqa: F401 — applies protobuf patch
 from zwift import Client as ZwiftClient
 
 
