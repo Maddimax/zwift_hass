@@ -280,133 +280,118 @@ class ZwiftData:
 
     def _update_player(self, player_id, world):
         """Fetch and update data for a single player."""
-        data = {}
-        online_player = {}
         try:
-            _profile = self._client.get_profile(player_id)
-            player_profile = _profile.profile or {}
-            _LOGGER.debug(
-                "Zwift profile data: {}".format(player_profile)
-            )
-            total_experience = int(
-                player_profile.get("totalExperiencePoints")
-            )
-            player_profile["playerLevel"] = int(
-                player_profile.get("achievementLevel", 0) / 100
-            )
-            player_profile["runLevel"] = int(
-                player_profile.get("runAchievementLevel", 0) / 100
-            )
-            player_profile["cycleProgress"] = int(
-                player_profile.get("achievementLevel", 0) % 100
-            )
-            player_profile["runProgress"] = int(
-                player_profile.get("runAchievementLevel", 0) % 100
-            )
-            latest_activity = _profile.latest_activity
-            latest_activity["world_name"] = ZWIFT_WORLDS.get(
-                latest_activity.get("worldId")
-            )
-            player_profile["latest_activity"] = latest_activity
-
-            data["total_experience"] = total_experience
-            data["level"] = player_profile["playerLevel"]
-            player_profile["world_name"] = ZWIFT_WORLDS.get(
-                player_profile.get("worldId")
-            )
-
+            player_profile = self._fetch_player_profile(player_id)
+            data = {
+                "total_experience": int(player_profile.get("totalExperiencePoints")),
+                "level": player_profile["playerLevel"],
+            }
             if player_profile.get("riding"):
-                player_state = world.player_status(player_id)
-                _LOGGER.debug(
-                    "Zwift player state data: {}".format(
-                        player_state.player_state
-                    )
-                )
-                altitude = (float(player_state.altitude) - 9000) / 2
-                distance = float(player_state.distance)
-                gradient = self.players[player_id].data.get(
-                    "gradient", 0
-                )
-                rideons = latest_activity.get(
-                    "activityRideOnCount", 0
-                )
-                if rideons > 0 and rideons > self.players[
-                    player_id
-                ].data.get("rideons", 0):
-                    self.hass.bus.fire(
-                        EVENT_ZWIFT_RIDE_ON,
-                        {
-                            "player_id": player_id,
-                            "rideons": rideons,
-                        },
-                    )
-                if (
-                    self.players[player_id].data.get("distance", 0) > 0
-                ):
-                    delta_distance = distance - self.players[
-                        player_id
-                    ].data.get("distance", 0)
-                    delta_altitude = altitude - self.players[
-                        player_id
-                    ].data.get("altitude", 0)
-                    if delta_distance > 0:
-                        gradient = delta_altitude / delta_distance
-                data.update(
-                    {
-                        "online": True,
-                        "heartrate": int(
-                            float(player_state.heartrate)
-                        ),
-                        "cadence": int(float(player_state.cadence)),
-                        "power": int(float(player_state.power)),
-                        "speed": player_state.speed / 1000000.0,
-                        "altitude": altitude,
-                        "distance": distance,
-                        "gradient": gradient,
-                        "rideons": rideons,
-                    }
-                )
-            online_player.update(player_profile)
-            self.players[player_id].player_profile = online_player
-            self.players[player_id].data = data
-            new_device_name = f"Zwift {self.players[player_id].friendly_player_id}"
-            old_device_name = self.players[player_id]._last_device_name
-            if old_device_name is not None and old_device_name != new_device_name:
-                self.players[player_id]._device_name_changed = True
-            self.players[player_id]._last_device_name = new_device_name
+                ride_data = self._fetch_ride_state(player_id, world, player_profile)
+                data.update(ride_data)
+            self._apply_player_update(player_id, player_profile, data)
         except RequestException as e:
-            if "401" in str(e):
-                self._client = None
-                _LOGGER.warning(
-                    "Zwift credentials are wrong or expired"
-                )
-            elif "404" in str(e):
-                _LOGGER.warning(
-                    "Upstream Zwift 404 - will try later"
-                )
-            elif "429" in str(e):
-                current_interval = self.online_update_interval
-                new_interval = (
-                    self.online_update_interval
-                    + timedelta(seconds=0.25)
-                )
-                self.online_update_interval = new_interval
-                _LOGGER.warning(
-                    "Upstream request throttling 429 - known issue, "
-                    "increasing interval from {}s to {}s".format(
-                        current_interval.total_seconds(),
-                        new_interval.total_seconds(),
-                    )
-                )
-            else:
-                _LOGGER.exception(
-                    "something went wrong in Zwift python library - "
-                    "{} while updating zwift sensor for player {}".format(
-                        str(e), player_id
-                    )
-                )
+            self._handle_request_error(e, player_id)
         except Exception:
             _LOGGER.exception(
-                "something went major wrong while updating zwift "
-                "sensor for player {}".format(player_id)
+                "Error updating Zwift player %s", player_id
+            )
+
+    def _fetch_player_profile(self, player_id):
+        """Fetch and enrich the player profile with computed fields."""
+        _profile = self._client.get_profile(player_id)
+        player_profile = _profile.profile or {}
+        _LOGGER.debug("Zwift profile data: %s", player_profile)
+
+        player_profile["playerLevel"] = int(
+            player_profile.get("achievementLevel", 0) / 100
+        )
+        player_profile["runLevel"] = int(
+            player_profile.get("runAchievementLevel", 0) / 100
+        )
+        player_profile["cycleProgress"] = int(
+            player_profile.get("achievementLevel", 0) % 100
+        )
+        player_profile["runProgress"] = int(
+            player_profile.get("runAchievementLevel", 0) % 100
+        )
+
+        latest_activity = _profile.latest_activity
+        latest_activity["world_name"] = ZWIFT_WORLDS.get(
+            latest_activity.get("worldId")
+        )
+        player_profile["latest_activity"] = latest_activity
+        player_profile["world_name"] = ZWIFT_WORLDS.get(
+            player_profile.get("worldId")
+        )
+        return player_profile
+
+    def _fetch_ride_state(self, player_id, world, player_profile):
+        """Fetch live ride data for an online player."""
+        player_state = world.player_status(player_id)
+        _LOGGER.debug("Zwift player state data: %s", player_state.player_state)
+
+        altitude = (float(player_state.altitude) - 9000) / 2
+        distance = float(player_state.distance)
+        prev_data = self.players[player_id].data
+        gradient = prev_data.get("gradient", 0)
+
+        latest_activity = player_profile.get("latest_activity", {})
+        rideons = latest_activity.get("activityRideOnCount", 0)
+        if rideons > 0 and rideons > prev_data.get("rideons", 0):
+            self.hass.bus.fire(
+                EVENT_ZWIFT_RIDE_ON,
+                {"player_id": player_id, "rideons": rideons},
+            )
+
+        if prev_data.get("distance", 0) > 0:
+            delta_distance = distance - prev_data.get("distance", 0)
+            delta_altitude = altitude - prev_data.get("altitude", 0)
+            if delta_distance > 0:
+                gradient = delta_altitude / delta_distance
+
+        return {
+            "online": True,
+            "heartrate": int(float(player_state.heartrate)),
+            "cadence": int(float(player_state.cadence)),
+            "power": int(float(player_state.power)),
+            "speed": player_state.speed / 1000000.0,
+            "altitude": altitude,
+            "distance": distance,
+            "gradient": gradient,
+            "rideons": rideons,
+        }
+
+    def _apply_player_update(self, player_id, player_profile, data):
+        """Apply fetched data to the player model."""
+        player = self.players[player_id]
+        player.player_profile = player_profile
+        player.data = data
+        new_device_name = f"Zwift {player.friendly_player_id}"
+        old_device_name = player._last_device_name
+        if old_device_name is not None and old_device_name != new_device_name:
+            player._device_name_changed = True
+        player._last_device_name = new_device_name
+
+    def _handle_request_error(self, error, player_id):
+        """Handle RequestException from the Zwift API."""
+        error_str = str(error)
+        if "401" in error_str:
+            self._client = None
+            _LOGGER.warning("Zwift credentials are wrong or expired")
+        elif "404" in error_str:
+            _LOGGER.warning("Upstream Zwift 404 - will try later")
+        elif "429" in error_str:
+            current_interval = self.online_update_interval
+            new_interval = self.online_update_interval + timedelta(seconds=0.25)
+            self.online_update_interval = new_interval
+            _LOGGER.warning(
+                "Upstream request throttling 429 - increasing interval from %ss to %ss",
+                current_interval.total_seconds(),
+                new_interval.total_seconds(),
+            )
+        else:
+            _LOGGER.exception(
+                "Zwift API error while updating player %s: %s",
+                player_id, error,
             )
