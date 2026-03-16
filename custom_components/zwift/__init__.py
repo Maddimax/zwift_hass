@@ -5,7 +5,7 @@ import voluptuous as vol
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_NAME, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers import device_registry as dr
+from homeassistant.helpers import device_registry as dr, entity_registry as er
 
 from .const import (
     _LOGGER,
@@ -96,6 +96,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     for device in dr.async_entries_for_config_entry(device_registry, entry.entry_id):
         if not device.identifiers & current_player_ids:
             device_registry.async_remove_device(device.id)
+
+    # Remove old "Update" button entities from previous versions
+    entity_registry = er.async_get(hass)
+    for player_id in zwift_data.players:
+        old_button_uid = f"zwift_update_{player_id}"
+        if entity_id := entity_registry.async_get_entity_id("button", DOMAIN, old_button_uid):
+            entity_registry.async_remove(entity_id)
 
     entry.async_on_unload(entry.add_update_listener(_async_update_listener))
 
