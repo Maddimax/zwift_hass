@@ -52,12 +52,11 @@ class ZwiftPlayerCoordinator(DataUpdateCoordinator):
 
     def _save_to_options(self, enabled, interval):
         """Persist polling state to config entry options."""
-        key = _player_polling_key(self.player_id)
-        new_options = {**self._entry.options, key: enabled}
-        self.hass.config_entries.async_update_entry(self._entry, options=new_options)
-
-        key = _player_interval_key(self.player_id)
-        new_options = {**self._entry.options, key: interval}
+        new_options = {
+            **self._entry.options,
+            _player_polling_key(self.player_id): enabled,
+            _player_interval_key(self.player_id): interval,
+        }
         self.hass.config_entries.async_update_entry(self._entry, options=new_options)
 
     @property
