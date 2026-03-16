@@ -8,7 +8,6 @@ DOMAIN = "zwift"
 
 CONF_PLAYERS = "players"
 CONF_INCLUDE_SELF = "include_self"
-CONF_UPDATE_INTERVAL = "update_interval"
 
 DEFAULT_NAME = "Zwift"
 

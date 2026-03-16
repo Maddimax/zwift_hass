@@ -1,7 +1,5 @@
 """The Zwift integration."""
 
-from datetime import timedelta
-
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
 from homeassistant.config_entries import ConfigEntry
@@ -13,14 +11,16 @@ from .const import (
     _LOGGER,
     CONF_INCLUDE_SELF,
     CONF_PLAYERS,
-    CONF_UPDATE_INTERVAL,
     DOMAIN,
     SENSOR_TYPES,
 )
 from .coordinator import ZwiftPlayerCoordinator
 from .zwift_data import ZwiftData
 
-PLATFORMS = ["button", "image", "light", "sensor", "switch"]
+PLATFORMS = ["button", "image", "light", "number", "sensor", "switch"]
+
+DEFAULT_SELF_INTERVAL = 15
+DEFAULT_OTHER_INTERVAL = 60
 
 CONFIG_SCHEMA = vol.Schema(
     {
@@ -33,9 +33,6 @@ CONFIG_SCHEMA = vol.Schema(
                 ),
                 vol.Optional(CONF_INCLUDE_SELF, default=True): cv.boolean,
                 vol.Optional(CONF_NAME, default="Zwift"): cv.string,
-                vol.Optional(
-                    CONF_UPDATE_INTERVAL, default=15
-                ): cv.positive_int,
             }
         )
     },
@@ -63,12 +60,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     # Players and include_self live in options so they can be changed later
     players = entry.options.get(CONF_PLAYERS, entry.data.get(CONF_PLAYERS, []))
     include_self = entry.options.get(CONF_INCLUDE_SELF, entry.data.get(CONF_INCLUDE_SELF, True))
-    update_interval_sec = entry.options.get(
-        CONF_UPDATE_INTERVAL, entry.data.get(CONF_UPDATE_INTERVAL, 15)
-    )
-    update_interval = timedelta(seconds=update_interval_sec)
 
-    zwift_data = ZwiftData(update_interval, username, password, players, hass)
+    zwift_data = ZwiftData(username, password, players, hass)
     try:
         await zwift_data._connect()
     except Exception:
@@ -78,9 +71,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     if include_self:
         zwift_data.add_tracked_player(zwift_data._profile.get("id"))
 
+    self_player_id = zwift_data._profile.get("id") if zwift_data._profile else None
+
     coordinators = {}
     for player_id in zwift_data.players:
-        coordinator = ZwiftPlayerCoordinator(hass, zwift_data, player_id)
+        default_interval = DEFAULT_SELF_INTERVAL if player_id == self_player_id else DEFAULT_OTHER_INTERVAL
+        coordinator = ZwiftPlayerCoordinator(hass, entry, zwift_data, player_id, default_interval)
         await coordinator.async_config_entry_first_refresh()
         coordinators[player_id] = coordinator
 
@@ -95,6 +91,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         ZwiftSportSensorEntity,
     )
     from .switch import ZwiftPollingSwitch
+    from .number import ZwiftUpdateIntervalNumber
 
     sensor_entity_classes = {
         "ZwiftOnlineSensorEntity": ZwiftOnlineSensorEntity,
@@ -102,7 +99,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         "ZwiftSportSensorEntity": ZwiftSportSensorEntity,
     }
 
-    self_player_id = zwift_data._profile.get("id") if zwift_data._profile else None
     entities_by_platform = {p: [] for p in PLATFORMS}
 
     for player_id, coordinator in coordinators.items():
@@ -121,6 +117,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             ZwiftPollingSwitch(player, coordinator, entry)
         )
 
+        default_interval = DEFAULT_SELF_INTERVAL if player_id == self_player_id else DEFAULT_OTHER_INTERVAL
+        entities_by_platform["number"].append(
+            ZwiftUpdateIntervalNumber(player, coordinator, entry)
+        )
+
         for variable in SENSOR_TYPES:
             if SENSOR_TYPES[variable].get("self_only") and player_id != self_player_id:
                 continue
@@ -136,6 +137,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         "zwift_data": zwift_data,
         "coordinators": coordinators,
         "entities": entities_by_platform,
+        "structural_options": {
+            CONF_PLAYERS: players,
+            CONF_INCLUDE_SELF: include_self,
+        },
     }
 
     # Remove devices for players that are no longer tracked
@@ -152,8 +157,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
 
 async def _async_update_listener(hass: HomeAssistant, entry: ConfigEntry):
-    """Reload the config entry when options change."""
-    await hass.config_entries.async_reload(entry.entry_id)
+    """Reload only when structural options (player list, include_self) change."""
+    entry_data = hass.data.get(DOMAIN, {}).get(entry.entry_id)
+    if entry_data is None:
+        return
+    prev = entry_data.get("structural_options", {})
+    new_players = entry.options.get(CONF_PLAYERS, entry.data.get(CONF_PLAYERS, []))
+    new_include_self = entry.options.get(CONF_INCLUDE_SELF, entry.data.get(CONF_INCLUDE_SELF, True))
+    if prev.get(CONF_PLAYERS) != new_players or prev.get(CONF_INCLUDE_SELF) != new_include_self:
+        await hass.config_entries.async_reload(entry.entry_id)
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):

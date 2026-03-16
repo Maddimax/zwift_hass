@@ -14,8 +14,7 @@
                 "description": "Choose players to track from your followees, or add custom player IDs.",
                 "data": {
                     "players": "Players to track",
-                    "include_self": "Include own profile",
-                    "update_interval": "Update interval (seconds)"
+                    "include_self": "Include own profile"
                 }
             }
         },
@@ -34,8 +33,7 @@
                 "description": "Select players to track from your followees, or add custom player IDs.",
                 "data": {
                     "players": "Players to track",
-                    "include_self": "Include own profile",
-                    "update_interval": "Update interval (seconds)"
+                    "include_self": "Include own profile"
                 }
             }
         }
@@ -54,6 +52,11 @@
         "switch": {
             "enable_polling": {
                 "name": "Enable polling"
+            }
+        },
+        "number": {
+            "update_interval": {
+                "name": "Update interval"
             }
         },
         "sensor": {

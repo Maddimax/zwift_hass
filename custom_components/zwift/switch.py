@@ -1,14 +1,15 @@
 """Zwift switch platform."""
 
+from datetime import timedelta
+
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.restore_state import RestoreEntity
 
-from .const import DOMAIN
+from .const import DOMAIN, _LOGGER
 
 
 async def async_setup_entry(
@@ -20,7 +21,7 @@ async def async_setup_entry(
     async_add_entities(hass.data[DOMAIN][entry.entry_id]["entities"]["switch"])
 
 
-class ZwiftPollingSwitch(SwitchEntity, RestoreEntity):
+class ZwiftPollingSwitch(SwitchEntity):
     """Switch to enable or disable Zwift update polling for a player."""
 
     _attr_has_entity_name = True
@@ -32,12 +33,6 @@ class ZwiftPollingSwitch(SwitchEntity, RestoreEntity):
         self._coordinator = coordinator
         self._entry = entry
         self._attr_unique_id = f"zwift_polling_{player.player_id}"
-
-    async def async_added_to_hass(self):
-        """Restore last known state on startup."""
-        last_state = await self.async_get_last_state()
-        if last_state and last_state.state == "off":
-            self._coordinator.update_interval = None
 
     @property
     def icon(self):
@@ -52,10 +47,9 @@ class ZwiftPollingSwitch(SwitchEntity, RestoreEntity):
         return self._coordinator.update_interval is not None
 
     async def async_turn_on(self, **kwargs):
-        self._coordinator.update_interval = self._coordinator.zwift_data.update_interval
-        await self._coordinator.async_request_refresh()
+        await self._coordinator.turn_on()
         self.async_write_ha_state()
 
     async def async_turn_off(self, **kwargs):
-        self._coordinator.update_interval = None
+        self._coordinator.turn_off()
         self.async_write_ha_state()

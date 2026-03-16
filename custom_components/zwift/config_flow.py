@@ -7,7 +7,7 @@ from homeassistant import config_entries
 from homeassistant.const import CONF_NAME, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.helpers.selector import SelectSelector, SelectSelectorConfig, SelectSelectorMode, SelectOptionDict
 
-from .const import _LOGGER, CONF_INCLUDE_SELF, CONF_PLAYERS, CONF_UPDATE_INTERVAL, DOMAIN
+from .const import _LOGGER, CONF_INCLUDE_SELF, CONF_PLAYERS, DOMAIN
 
 # Patch zwift protobuf
 from .zwift_patch import zwift_messages_pb2 as new_pb2
@@ -106,7 +106,6 @@ class ZwiftConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             selected = user_input.get(CONF_PLAYERS, [])
             include_self = user_input.get(CONF_INCLUDE_SELF, True)
-            update_interval = user_input.get(CONF_UPDATE_INTERVAL, 15)
 
             return self.async_create_entry(
                 title=f"Zwift ({self._user_data[CONF_USERNAME]})",
@@ -114,7 +113,6 @@ class ZwiftConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 options={
                     CONF_PLAYERS: selected,
                     CONF_INCLUDE_SELF: include_self,
-                    CONF_UPDATE_INTERVAL: update_interval,
                 },
             )
 
@@ -134,9 +132,6 @@ class ZwiftConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     )
                 ),
                 vol.Optional(CONF_INCLUDE_SELF, default=True): bool,
-                vol.Optional(CONF_UPDATE_INTERVAL, default=15): vol.All(
-                    int, vol.Range(min=15)
-                ),
             }
         )
 
@@ -183,7 +178,6 @@ class ZwiftOptionsFlow(config_entries.OptionsFlow):
                 data={
                     CONF_PLAYERS: selected,
                     CONF_INCLUDE_SELF: user_input.get(CONF_INCLUDE_SELF, True),
-                    CONF_UPDATE_INTERVAL: user_input.get(CONF_UPDATE_INTERVAL, 15),
                 },
             )
 
@@ -201,7 +195,6 @@ class ZwiftOptionsFlow(config_entries.OptionsFlow):
 
         current_players = self._config_entry.options.get(CONF_PLAYERS, [])
         current_include_self = self._config_entry.options.get(CONF_INCLUDE_SELF, True)
-        current_update_interval = self._config_entry.options.get(CONF_UPDATE_INTERVAL, 15)
 
         followee_options = [
             SelectOptionDict(value=f["id"], label=f["label"])
@@ -233,10 +226,6 @@ class ZwiftOptionsFlow(config_entries.OptionsFlow):
                     CONF_INCLUDE_SELF,
                     default=current_include_self,
                 ): bool,
-                vol.Optional(
-                    CONF_UPDATE_INTERVAL,
-                    default=current_update_interval,
-                ): vol.All(int, vol.Range(min=15)),
             }
         )
 

@@ -220,14 +220,13 @@ class ZwiftPlayerData:
 class ZwiftData:
     """Representation of a Zwift client data collection object."""
 
-    def __init__(self, update_interval, username, password, players, hass):
+    def __init__(self, username, password, players, hass):
         self._client = None
         self.username = username
         self.password = password
         self.hass = hass
         self.players = {}
         self._profile = None
-        self.update_interval = update_interval
         self.online_update_interval = timedelta(seconds=2)
         if players:
             for player_id in players:
