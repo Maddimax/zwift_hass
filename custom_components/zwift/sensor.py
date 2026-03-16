@@ -58,9 +58,7 @@ class ZwiftSensorEntity(CoordinatorEntity, SensorEntity):
         self._type = sensor_type
         self._sensor_config = SENSOR_TYPES[sensor_type]
         self._entry = entry
-        self._attr_unique_id = "zwift_{}_{}".format(
-            self._sensor_config["name"], self._player.player_id
-        ).replace(" ", "").lower()
+        self._attr_unique_id = f"zwift_{self._sensor_config['name']}_{self._player.player_id}".replace(" ", "").lower()
 
     @property
     def device_info(self):

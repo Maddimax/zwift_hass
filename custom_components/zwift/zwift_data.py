@@ -248,7 +248,7 @@ class ZwiftData:
             client.auth_token.fetch_token_data
         )
         if "error" in token:
-            raise Exception("Zwift authorization failed: {}".format(token))
+            raise Exception(f"Zwift authorization failed: {token}")
         return True
 
     @property
