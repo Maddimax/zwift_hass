@@ -241,7 +241,7 @@ class ZwiftData:
 
     @property
     def any_players_online(self):
-        return sum([p.online for p in self.players.values()]) > 0
+        return any(p.online for p in self.players.values())
 
     async def check_zwift_auth(self, client):
         token = await self.hass.async_add_executor_job(
