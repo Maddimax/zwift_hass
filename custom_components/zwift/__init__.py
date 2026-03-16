@@ -17,7 +17,7 @@ from .const import (
 from .coordinator import ZwiftPlayerCoordinator
 from .zwift_data import ZwiftData
 
-PLATFORMS = ["button", "image", "light", "number", "sensor", "switch"]
+PLATFORMS = ["image", "light", "number", "sensor", "switch"]
 
 DEFAULT_SELF_INTERVAL = 15
 DEFAULT_OTHER_INTERVAL = 60
@@ -81,7 +81,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         coordinators[player_id] = coordinator
 
     # Import entity classes from platforms
-    from .button import ZwiftUpdateButton
     from .image import ZwiftProfileImageEntity
     from .light import ZwiftPowerZoneLight
     from .sensor import (
@@ -104,9 +103,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     for player_id, coordinator in coordinators.items():
         player = coordinator.player
 
-        entities_by_platform["button"].append(
-            ZwiftUpdateButton(player, coordinator, entry)
-        )
         entities_by_platform["image"].append(
             ZwiftProfileImageEntity(coordinator, hass, player, entry)
         )
