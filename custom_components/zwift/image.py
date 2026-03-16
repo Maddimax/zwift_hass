@@ -18,7 +18,12 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up Zwift image entities from a config entry."""
-    async_add_entities(hass.data[DOMAIN][entry.entry_id]["entities"]["image"], True)
+    coordinators = hass.data[DOMAIN][entry.entry_id]["coordinators"]
+    entities = [
+        ZwiftProfileImageEntity(coordinator, hass, coordinator.player, entry)
+        for coordinator in coordinators.values()
+    ]
+    async_add_entities(entities, True)
 
 
 class ZwiftProfileImageEntity(CoordinatorEntity, ImageEntity):

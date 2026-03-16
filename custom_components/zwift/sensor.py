@@ -18,13 +18,34 @@ from .const import (
 )
 
 
+
+
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up Zwift sensors from a config entry."""
-    async_add_entities(hass.data[DOMAIN][entry.entry_id]["entities"]["sensor"], True)
+    entry_data = hass.data[DOMAIN][entry.entry_id]
+    coordinators = entry_data["coordinators"]
+    self_player_id = entry_data.get("self_player_id")
+
+    class_map = {
+        "ZwiftOnlineSensorEntity": ZwiftOnlineSensorEntity,
+        "ZwiftPowerZoneSensorEntity": ZwiftPowerZoneSensorEntity,
+        "ZwiftSportSensorEntity": ZwiftSportSensorEntity,
+    }
+
+    entities = []
+    for player_id, coordinator in coordinators.items():
+        player = coordinator.player
+        for variable, config in SENSOR_TYPES.items():
+            if config.get("self_only") and player_id != self_player_id:
+                continue
+            entity_class = class_map.get(config.get("entity_class"), ZwiftSensorEntity)
+            entities.append(entity_class(coordinator, player, variable, entry))
+
+    async_add_entities(entities, True)
 
 
 class ZwiftSensorEntity(CoordinatorEntity, SensorEntity):

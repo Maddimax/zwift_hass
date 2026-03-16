@@ -28,7 +28,12 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up Zwift power zone light entities."""
-    async_add_entities(hass.data[DOMAIN][entry.entry_id]["entities"]["light"], True)
+    coordinators = hass.data[DOMAIN][entry.entry_id]["coordinators"]
+    entities = [
+        ZwiftPowerZoneLight(coordinator, coordinator.player)
+        for coordinator in coordinators.values()
+    ]
+    async_add_entities(entities, True)
 
 
 class ZwiftPowerZoneLight(CoordinatorEntity, LightEntity):

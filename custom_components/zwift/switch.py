@@ -18,7 +18,12 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up Zwift switches from a config entry."""
-    async_add_entities(hass.data[DOMAIN][entry.entry_id]["entities"]["switch"])
+    coordinators = hass.data[DOMAIN][entry.entry_id]["coordinators"]
+    entities = [
+        ZwiftPollingSwitch(coordinator.player, coordinator, entry)
+        for coordinator in coordinators.values()
+    ]
+    async_add_entities(entities)
 
 
 class ZwiftPollingSwitch(SwitchEntity):

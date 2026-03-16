@@ -12,7 +12,6 @@ from .const import (
     CONF_INCLUDE_SELF,
     CONF_PLAYERS,
     DOMAIN,
-    SENSOR_TYPES,
 )
 from .coordinator import ZwiftPlayerCoordinator
 from .zwift_data import ZwiftData
@@ -80,59 +79,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         await coordinator.async_config_entry_first_refresh()
         coordinators[player_id] = coordinator
 
-    # Import entity classes from platforms
-    from .image import ZwiftProfileImageEntity
-    from .light import ZwiftPowerZoneLight
-    from .sensor import (
-        ZwiftOnlineSensorEntity,
-        ZwiftPowerZoneSensorEntity,
-        ZwiftSensorEntity,
-        ZwiftSportSensorEntity,
-    )
-    from .switch import ZwiftPollingSwitch
-    from .number import ZwiftUpdateIntervalNumber
-
-    sensor_entity_classes = {
-        "ZwiftOnlineSensorEntity": ZwiftOnlineSensorEntity,
-        "ZwiftPowerZoneSensorEntity": ZwiftPowerZoneSensorEntity,
-        "ZwiftSportSensorEntity": ZwiftSportSensorEntity,
-    }
-
-    entities_by_platform = {p: [] for p in PLATFORMS}
-
-    for player_id, coordinator in coordinators.items():
-        player = coordinator.player
-
-        entities_by_platform["image"].append(
-            ZwiftProfileImageEntity(coordinator, hass, player, entry)
-        )
-        entities_by_platform["light"].append(
-            ZwiftPowerZoneLight(coordinator, player)
-        )
-        entities_by_platform["switch"].append(
-            ZwiftPollingSwitch(player, coordinator, entry)
-        )
-
-        default_interval = DEFAULT_SELF_INTERVAL if player_id == self_player_id else DEFAULT_OTHER_INTERVAL
-        entities_by_platform["number"].append(
-            ZwiftUpdateIntervalNumber(player, coordinator, entry)
-        )
-
-        for variable in SENSOR_TYPES:
-            if SENSOR_TYPES[variable].get("self_only") and player_id != self_player_id:
-                continue
-            entity_class = sensor_entity_classes.get(
-                SENSOR_TYPES[variable].get("entity_class"), ZwiftSensorEntity
-            )
-            entities_by_platform["sensor"].append(
-                entity_class(coordinator, player, variable, entry)
-            )
-
     hass.data.setdefault(DOMAIN, {})
     hass.data[DOMAIN][entry.entry_id] = {
         "zwift_data": zwift_data,
         "coordinators": coordinators,
-        "entities": entities_by_platform,
+        "self_player_id": self_player_id,
         "structural_options": {
             CONF_PLAYERS: players,
             CONF_INCLUDE_SELF: include_self,
