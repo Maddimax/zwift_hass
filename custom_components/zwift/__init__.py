@@ -96,6 +96,18 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             await zwift_data._connect()
         await hass.async_add_executor_job(zwift_data.update)
 
+        device_registry = dr.async_get(hass)
+        for player_id, player in zwift_data.players.items():
+            if player._device_name_changed:
+                player._device_name_changed = False
+                device = device_registry.async_get_device(
+                    identifiers={(DOMAIN, str(player_id))}
+                )
+                if device:
+                    device_registry.async_update_device(
+                        device.id, name=player._last_device_name
+                    )
+
         next_update = zwift_data.update_interval
         if zwift_data.any_players_online:
             next_update = zwift_data.online_update_interval
@@ -139,6 +151,8 @@ class ZwiftPlayerData:
         self.data = {}
         self.player_profile = {}
         self.polling_enabled = True
+        self._last_device_name = None
+        self._device_name_changed = False
 
     @property
     def player_id(self):
@@ -483,6 +497,11 @@ class ZwiftData:
             online_player.update(player_profile)
             self.players[player_id].player_profile = online_player
             self.players[player_id].data = data
+            new_device_name = f"Zwift {self.players[player_id].friendly_player_id}"
+            old_device_name = self.players[player_id]._last_device_name
+            if old_device_name is not None and old_device_name != new_device_name:
+                self.players[player_id]._device_name_changed = True
+            self.players[player_id]._last_device_name = new_device_name
         except RequestException as e:
             if "401" in str(e):
                 self._client = None
