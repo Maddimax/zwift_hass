@@ -6,10 +6,10 @@ from homeassistant.components.light import (
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import _LOGGER, DOMAIN, SIGNAL_ZWIFT_UPDATE
+from .const import _LOGGER, DOMAIN
 
 
 def hex_to_rgb(hex_color: str) -> tuple[int, int, int]:
@@ -28,17 +28,10 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up Zwift power zone light entities."""
-    zwift_data = hass.data[DOMAIN][entry.entry_id]
-
-    entities = []
-    for player_id in zwift_data.players:
-        player = zwift_data.players[player_id]
-        entities.append(ZwiftPowerZoneLight(player))
-
-    async_add_entities(entities, True)
+    async_add_entities(hass.data[DOMAIN][entry.entry_id]["entities"]["light"], True)
 
 
-class ZwiftPowerZoneLight(LightEntity):
+class ZwiftPowerZoneLight(CoordinatorEntity, LightEntity):
     """Light entity representing the current power zone color."""
 
     _attr_has_entity_name = True
@@ -46,7 +39,8 @@ class ZwiftPowerZoneLight(LightEntity):
     _attr_supported_color_modes = {ColorMode.RGB}
     _attr_icon = "mdi:flash"
 
-    def __init__(self, player):
+    def __init__(self, coordinator, player):
+        super().__init__(coordinator)
         self._player = player
         self._attr_unique_id = f"zwift_powerzonecolor_{player.player_id}"
 
@@ -72,15 +66,3 @@ class ZwiftPowerZoneLight(LightEntity):
         if info:
             return hex_to_rgb(info[2])
         return None
-
-    async def async_added_to_hass(self):
-        """Register update signal handler."""
-
-        async def async_update_state():
-            self.async_write_ha_state()
-
-        async_dispatcher_connect(
-            self.hass,
-            SIGNAL_ZWIFT_UPDATE.format(player_id=self._player.player_id),
-            async_update_state,
-        )

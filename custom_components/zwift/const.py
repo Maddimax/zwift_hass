@@ -12,8 +12,6 @@ CONF_UPDATE_INTERVAL = "update_interval"
 
 DEFAULT_NAME = "Zwift"
 
-SIGNAL_ZWIFT_UPDATE = "zwift_update_{player_id}"
-
 EVENT_ZWIFT_RIDE_ON = "zwift_ride_on"
 
 ZWIFT_IGNORED_PROFILE_ATTRIBUTES = [

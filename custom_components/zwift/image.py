@@ -6,10 +6,10 @@ from homeassistant.components.image import ImageEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import _LOGGER, DOMAIN, SIGNAL_ZWIFT_UPDATE
+from .const import _LOGGER, DOMAIN
 
 
 async def async_setup_entry(
@@ -18,24 +18,18 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up Zwift image entities from a config entry."""
-    zwift_data = hass.data[DOMAIN][entry.entry_id]
-
-    entities = []
-    for player_id in zwift_data.players:
-        player = zwift_data.players[player_id]
-        entities.append(ZwiftProfileImageEntity(hass, player, entry))
-
-    async_add_entities(entities, True)
+    async_add_entities(hass.data[DOMAIN][entry.entry_id]["entities"]["image"], True)
 
 
-class ZwiftProfileImageEntity(ImageEntity):
+class ZwiftProfileImageEntity(CoordinatorEntity, ImageEntity):
     """Image entity for a Zwift player's profile picture."""
 
     _attr_has_entity_name = True
 
-    def __init__(self, hass, player, entry):
+    def __init__(self, coordinator, hass, player, entry):
         """Initialize the image entity."""
-        super().__init__(hass)
+        CoordinatorEntity.__init__(self, coordinator)
+        ImageEntity.__init__(self, hass)
         self._player = player
         self._attr_unique_id = f"zwift_profile_image_{player.player_id}"
         self._current_url = None
@@ -81,15 +75,3 @@ class ZwiftProfileImageEntity(ImageEntity):
                 _LOGGER.exception("Error fetching Zwift profile image")
 
         return self._cached_image
-
-    async def async_added_to_hass(self):
-        """Register update signal handler."""
-
-        async def async_update_state():
-            self.async_write_ha_state()
-
-        async_dispatcher_connect(
-            self.hass,
-            SIGNAL_ZWIFT_UPDATE.format(player_id=self._player.player_id),
-            async_update_state,
-        )

@@ -5,15 +5,14 @@ from homeassistant.components.sensor import SensorDeviceClass, SensorEntity, Sen
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EntityCategory, MATCH_ALL
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import (
     _LOGGER,
     DOMAIN,
     POWER_ZONE_OPTIONS,
     SENSOR_TYPES,
-    SIGNAL_ZWIFT_UPDATE,
     SPORT_OPTIONS,
     ZWIFT_IGNORED_PROFILE_ATTRIBUTES,
 )
@@ -25,37 +24,15 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up Zwift sensors from a config entry."""
-    zwift_data = hass.data[DOMAIN][entry.entry_id]
-
-    entity_classes = {
-        "ZwiftOnlineSensorEntity": ZwiftOnlineSensorEntity,
-        "ZwiftPowerZoneSensorEntity": ZwiftPowerZoneSensorEntity,
-        "ZwiftSportSensorEntity": ZwiftSportSensorEntity,
-    }
-
-    entities = []
-    self_player_id = zwift_data._profile.get("id") if zwift_data._profile else None
-    for player_id in zwift_data.players:
-        player = zwift_data.players[player_id]
-        for variable in SENSOR_TYPES:
-            if SENSOR_TYPES[variable].get("self_only") and player_id != self_player_id:
-                continue
-            entity_class = entity_classes.get(
-                SENSOR_TYPES[variable].get("entity_class"), ZwiftSensorEntity
-            )
-            entities.append(
-                entity_class(zwift_data, player, variable, entry)
-            )
-
-    async_add_entities(entities, True)
+    async_add_entities(hass.data[DOMAIN][entry.entry_id]["entities"]["sensor"], True)
 
 
-class ZwiftSensorEntity(SensorEntity):
+class ZwiftSensorEntity(CoordinatorEntity, SensorEntity):
     _attr_has_entity_name = True
 
-    def __init__(self, zwift_data, player, sensor_type, entry):
+    def __init__(self, coordinator, player, sensor_type, entry):
         """Initialize the sensor."""
-        self._zwift_data = zwift_data
+        super().__init__(coordinator)
         self._player = player
         self._type = sensor_type
         self._sensor_config = SENSOR_TYPES[sensor_type]
@@ -113,18 +90,6 @@ class ZwiftSensorEntity(SensorEntity):
         """Return the state class of the sensor."""
         return self._sensor_config.get("state_class")
 
-    async def async_added_to_hass(self):
-        """Register update signal handler."""
-
-        async def async_update_state():
-            """Update sensor state."""
-            self.async_write_ha_state()
-
-        async_dispatcher_connect(
-            self.hass,
-            SIGNAL_ZWIFT_UPDATE.format(player_id=self._player.player_id),
-            async_update_state,
-        )
 
 class ZwiftPowerZoneSensorEntity(ZwiftSensorEntity):
     _attr_translation_key = "powerzonename"

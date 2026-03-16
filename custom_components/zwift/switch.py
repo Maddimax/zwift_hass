@@ -17,14 +17,7 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up Zwift switches from a config entry."""
-    zwift_data = hass.data[DOMAIN][entry.entry_id]
-
-    entities = []
-    for player_id in zwift_data.players:
-        player = zwift_data.players[player_id]
-        entities.append(ZwiftPollingSwitch(player, entry))
-
-    async_add_entities(entities)
+    async_add_entities(hass.data[DOMAIN][entry.entry_id]["entities"]["switch"])
 
 
 class ZwiftPollingSwitch(SwitchEntity, RestoreEntity):
@@ -34,8 +27,9 @@ class ZwiftPollingSwitch(SwitchEntity, RestoreEntity):
     _attr_entity_category = EntityCategory.CONFIG
     _attr_translation_key = "enable_polling"
 
-    def __init__(self, player, entry):
+    def __init__(self, player, coordinator, entry):
         self._player = player
+        self._coordinator = coordinator
         self._entry = entry
         self._attr_unique_id = f"zwift_polling_{player.player_id}"
 
@@ -43,7 +37,7 @@ class ZwiftPollingSwitch(SwitchEntity, RestoreEntity):
         """Restore last known state on startup."""
         last_state = await self.async_get_last_state()
         if last_state and last_state.state == "off":
-            self._player.polling_enabled = False
+            self._coordinator.update_interval = None
 
     @property
     def icon(self):
@@ -55,12 +49,13 @@ class ZwiftPollingSwitch(SwitchEntity, RestoreEntity):
 
     @property
     def is_on(self):
-        return self._player.polling_enabled
+        return self._coordinator.update_interval is not None
 
     async def async_turn_on(self, **kwargs):
-        self._player.polling_enabled = True
+        self._coordinator.update_interval = self._coordinator.zwift_data.update_interval
+        await self._coordinator.async_request_refresh()
         self.async_write_ha_state()
 
     async def async_turn_off(self, **kwargs):
-        self._player.polling_enabled = False
+        self._coordinator.update_interval = None
         self.async_write_ha_state()
