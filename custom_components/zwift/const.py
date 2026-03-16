@@ -91,3 +91,13 @@ POWER_ZONE_OPTIONS = [
     "anaerobic",
     "neuromuscular",
 ]
+
+POWER_ZONES = (
+    (0.55, 1, "active_recovery", "#808080"),
+    (0.75, 2, "endurance", "#3399FF"),
+    (0.90, 3, "tempo", "#00CC00"),
+    (1.05, 4, "threshold", "#FFD700"),
+    (1.20, 5, "vo2max", "#FF8C00"),
+    (1.50, 6, "anaerobic", "#FF0000"),
+)
+POWER_ZONE_NEUROMUSCULAR = (7, "neuromuscular", "#800080")

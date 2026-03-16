@@ -13,6 +13,8 @@ from .const import (
     _LOGGER,
     DOMAIN,
     EVENT_ZWIFT_RIDE_ON,
+    POWER_ZONES,
+    POWER_ZONE_NEUROMUSCULAR,
     ZWIFT_WORLDS,
 )
 
@@ -182,18 +184,10 @@ class ZwiftPlayerData:
         if not ftp or ftp == 0:
             return None
         ratio = power / ftp
-        zones = [
-            (0.55, 1, "active_recovery", "#808080"),
-            (0.75, 2, "endurance", "#3399FF"),
-            (0.90, 3, "tempo", "#00CC00"),
-            (1.05, 4, "threshold", "#FFD700"),
-            (1.20, 5, "vo2max", "#FF8C00"),
-            (1.50, 6, "anaerobic", "#FF0000"),
-        ]
-        for threshold, zone, name, color in zones:
+        for threshold, zone, name, color in POWER_ZONES:
             if ratio < threshold:
                 return (zone, name, color)
-        return (7, "neuromuscular", "#800080")
+        return POWER_ZONE_NEUROMUSCULAR
 
     @property
     def powerzone(self):
