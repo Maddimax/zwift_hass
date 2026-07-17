@@ -59,7 +59,7 @@ SENSOR_TYPES = {
     "cycleprogress": {"name": "Cycle Progress", "entity_category": "diagnostic", "unit": "%", "icon": "mdi:transfer-right"},
     "runprogress": {"name": "Run Progress", "entity_category": "diagnostic","unit": "%", "icon": "mdi:transfer-right"},
     "totaldistance": {"name": "Total Distance", "unit": "m", "entity_category": "diagnostic", "device_class": "distance", "suggested_unit_metric": "km", "suggested_unit_imperial": "mi", "icon": "mdi:map-marker-distance"},
-    "totaldistanceclimbed": {"name": "Total Distance Climbed", "entity_category": "diagnostic",  "unit": "m", "device_class": "distance", "suggested_unit_imperial": "ft", "icon": "mdi:elevation-rise"},
+    "totaldistanceclimbed": {"name": "Total Distance Climbed", "entity_category": "diagnostic",  "unit": "m", "device_class": "distance", "suggested_unit_metric": "km", "suggested_unit_imperial": "ft", "icon": "mdi:elevation-rise"},
     "totaltimeinminutes": {"name": "Total Time", "unit": "min", "device_class": "duration", "entity_category": "diagnostic", "suggested_unit_metric": "d", "suggested_unit_imperial": "d", "icon": "mdi:clock-outline"},
     "totalgold": {"name": "Drops", "entity_category": "diagnostic", "icon": "mdi:water"},
     "streakscurrentlength": {"name": "Current Streak", "unit": "w", "entity_category": "diagnostic", "icon": "mdi:fire"},
