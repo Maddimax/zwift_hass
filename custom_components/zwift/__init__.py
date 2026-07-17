@@ -102,12 +102,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         if not device.identifiers & current_player_ids:
             device_registry.async_remove_device(device.id)
 
-    # Remove old "Update" button entities from previous versions
+    # Remove old "Update" button entities from previous versions, regardless of
+    # whether their player is still tracked
     entity_registry = er.async_get(hass)
-    for player_id in zwift_data.players:
-        old_button_uid = f"zwift_update_{player_id}"
-        if entity_id := entity_registry.async_get_entity_id("button", DOMAIN, old_button_uid):
-            entity_registry.async_remove(entity_id)
+    for entity in list(entity_registry.entities.values()):
+        if (
+            entity.platform == DOMAIN
+            and entity.domain == "button"
+            and entity.unique_id.startswith("zwift_update_")
+        ):
+            entity_registry.async_remove(entity.entity_id)
 
     entry.async_on_unload(entry.add_update_listener(_async_update_listener))
 
