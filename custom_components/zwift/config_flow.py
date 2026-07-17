@@ -51,6 +51,9 @@ class ZwiftConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             username = user_input[CONF_USERNAME]
             password = user_input[CONF_PASSWORD]
 
+            await self.async_set_unique_id(username.lower())
+            self._abort_if_unique_id_configured()
+
             try:
                 client = ZwiftClient(username, password)
                 token = await self.hass.async_add_executor_job(
@@ -64,9 +67,6 @@ class ZwiftConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         CONF_USERNAME: username,
                         CONF_PASSWORD: password,
                     }
-
-                    await self.async_set_unique_id(username.lower())
-                    self._abort_if_unique_id_configured()
 
                     # Fetch followees for the selection step
                     try:
