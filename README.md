@@ -112,31 +112,28 @@ Previous versions of this integration required entering player IDs manually as a
 
 ### YAML configuration
 
-If you configured via `configuration.yaml`, the YAML import path still works but is **deprecated**. To migrate:
+If you configured this integration via `configuration.yaml` in a previous version, **no changes are necessary** — both the original `sensor:` platform format and the newer `zwift:` format are imported automatically on upgrade:
 
-1. Update the old sensor platform block in your `configuration.yaml` to the new `zwift:` format:
+```yaml
+# Original format — imported automatically, no edits needed:
+sensor:
+  - platform: zwift
+    username: !secret my_zwift_username
+    password: !secret my_zwift_password
+    players:
+      - !secret my_friends_zwift_player_id
 
-   ```yaml
-   # Old format — replace this:
-   sensor:
-     - platform: zwift
-       username: !secret my_zwift_username
-       password: !secret my_zwift_password
-       players:
-         - !secret my_friends_zwift_player_id
+# Newer format — also imported automatically, no edits needed:
+zwift:
+  username: !secret my_zwift_username
+  password: !secret my_zwift_password
+  players:
+    - !secret my_friends_zwift_player_id
+```
 
-   # New format:
-   zwift:
-     username: !secret my_zwift_username
-     password: !secret my_zwift_password
-     players:
-       - !secret my_friends_zwift_player_id
-   ```
+Just upgrade and restart Home Assistant. Either format is automatically imported into a config entry under **Settings → Devices & Services**, and your existing entities keep their history (matched against their previous unique IDs). Home Assistant will also show a notice under **Settings → Repairs** once the import completes, letting you know the YAML block is no longer needed and can be safely removed at your convenience — leaving it in place is harmless, it just won't do anything further.
 
-2. Restart Home Assistant — the integration will automatically import your YAML configuration and create a config entry
-3. Once Home Assistant has started and you can see the Zwift integration under **Settings → Devices & Services**, remove the `zwift:` block from your `configuration.yaml` entirely
-4. Restart Home Assistant again — the integration will continue to work from the imported config entry
-5. To manage tracked players going forward, click **Configure** on the integration to select from your followees list
+To manage tracked players going forward, click **Configure** on the integration to select from your followees list rather than editing YAML.
 
 ### Device naming change
 

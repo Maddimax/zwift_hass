@@ -5,7 +5,7 @@ import voluptuous as vol
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_NAME, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers import device_registry as dr, entity_registry as er
+from homeassistant.helpers import device_registry as dr, entity_registry as er, issue_registry as ir
 
 from .const import (
     _LOGGER,
@@ -53,6 +53,14 @@ async def async_setup(hass: HomeAssistant, config: dict):
                 context={"source": "import"},
                 data=config[DOMAIN],
             )
+        )
+        ir.async_create_issue(
+            hass,
+            DOMAIN,
+            "deprecated_yaml_domain_config",
+            is_fixable=False,
+            severity=ir.IssueSeverity.WARNING,
+            translation_key="deprecated_yaml_domain_config",
         )
     return True
 

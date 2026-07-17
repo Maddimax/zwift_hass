@@ -43,6 +43,16 @@
             "ride_on": "Ride On received"
         }
     },
+    "issues": {
+        "deprecated_yaml_sensor_platform": {
+            "title": "Zwift YAML configuration is deprecated",
+            "description": "The `sensor:` platform configuration for Zwift in configuration.yaml has been imported and is no longer needed. You can safely remove the `sensor: - platform: zwift` block from configuration.yaml; the integration will continue to work from the imported config entry under Settings > Devices & Services."
+        },
+        "deprecated_yaml_domain_config": {
+            "title": "Zwift YAML configuration is deprecated",
+            "description": "The `zwift:` configuration in configuration.yaml has been imported and is no longer needed. You can safely remove the `zwift:` block from configuration.yaml; the integration will continue to work from the imported config entry under Settings > Devices & Services."
+        }
+    },
     "entity": {
         "switch": {
             "enable_polling": {

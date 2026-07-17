@@ -1,15 +1,24 @@
 """Zwift sensor platform."""
 
+import voluptuous as vol
+import homeassistant.helpers.config_validation as cv
 from homeassistant.components.binary_sensor import BinarySensorEntity
-from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
+from homeassistant.components.sensor import (
+    PLATFORM_SCHEMA as SENSOR_PLATFORM_SCHEMA,
+    SensorDeviceClass,
+    SensorEntity,
+)
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_NAME, EntityCategory, MATCH_ALL
+from homeassistant.const import CONF_NAME, CONF_PASSWORD, CONF_USERNAME, EntityCategory, MATCH_ALL
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import (
     _LOGGER,
+    CONF_INCLUDE_SELF,
+    CONF_PLAYERS,
     DEFAULT_NAME,
     DOMAIN,
     POWER_ZONE_OPTIONS,
@@ -18,7 +27,45 @@ from .const import (
     ZWIFT_IGNORED_PROFILE_ATTRIBUTES,
 )
 
+# Legacy `sensor: - platform: zwift` YAML schema, kept only so existing users are
+# migrated automatically instead of needing to hand-edit configuration.yaml.
+# `extra=vol.REMOVE_EXTRA` drops stray old keys (e.g. `update_interval`) instead of
+# failing validation for the whole platform.
+PLATFORM_SCHEMA = SENSOR_PLATFORM_SCHEMA.extend(
+    {
+        vol.Required(CONF_USERNAME): cv.string,
+        vol.Required(CONF_PASSWORD): cv.string,
+        vol.Optional(CONF_PLAYERS, default=[]): vol.All(cv.ensure_list, [cv.string]),
+        vol.Optional(CONF_INCLUDE_SELF, default=True): cv.boolean,
+        vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
+    },
+    extra=vol.REMOVE_EXTRA,
+)
 
+
+async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
+    """Forward legacy `sensor: - platform: zwift` YAML into the config flow import step."""
+    hass.async_create_task(
+        hass.config_entries.flow.async_init(
+            DOMAIN,
+            context={"source": "import"},
+            data={
+                CONF_USERNAME: config[CONF_USERNAME],
+                CONF_PASSWORD: config[CONF_PASSWORD],
+                CONF_PLAYERS: config.get(CONF_PLAYERS, []),
+                CONF_INCLUDE_SELF: config.get(CONF_INCLUDE_SELF, True),
+                CONF_NAME: config.get(CONF_NAME, DEFAULT_NAME),
+            },
+        )
+    )
+    ir.async_create_issue(
+        hass,
+        DOMAIN,
+        "deprecated_yaml_sensor_platform",
+        is_fixable=False,
+        severity=ir.IssueSeverity.WARNING,
+        translation_key="deprecated_yaml_sensor_platform",
+    )
 
 
 async def async_setup_entry(
