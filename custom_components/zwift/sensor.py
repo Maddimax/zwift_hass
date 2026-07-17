@@ -83,8 +83,8 @@ class ZwiftSensorEntity(CoordinatorEntity, SensorEntity):
 
     @property
     def suggested_unit_of_measurement(self):
-        """Return suggested unit based on player's metric preference."""
-        use_metric = self._player.player_profile.get("useMetric", True)
+        """Return suggested unit based on the account owner's metric preference."""
+        use_metric = self.coordinator.zwift_data.is_metric
         if use_metric:
             return self._sensor_config.get("suggested_unit_metric")
         return self._sensor_config.get("suggested_unit_imperial")
