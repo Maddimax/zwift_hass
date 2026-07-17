@@ -3,13 +3,14 @@
 from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import EntityCategory, MATCH_ALL
+from homeassistant.const import CONF_NAME, EntityCategory, MATCH_ALL
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import (
     _LOGGER,
+    DEFAULT_NAME,
     DOMAIN,
     POWER_ZONE_OPTIONS,
     SENSOR_TYPES,
@@ -58,7 +59,8 @@ class ZwiftSensorEntity(CoordinatorEntity, SensorEntity):
         self._type = sensor_type
         self._sensor_config = SENSOR_TYPES[sensor_type]
         self._entry = entry
-        self._attr_unique_id = f"zwift_{self._sensor_config['name']}_{self._player.player_id}".replace(" ", "").lower()
+        base_name = entry.data.get(CONF_NAME, DEFAULT_NAME)
+        self._attr_unique_id = f"{base_name}_{self._sensor_config['name']}_{self._player.player_id}".replace(" ", "").lower()
 
     @property
     def device_info(self):
