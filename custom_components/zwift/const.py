@@ -53,7 +53,7 @@ SENSOR_TYPES = {
     "power": {"name": "Power", "unit": "W", "device_class": "power", "icon": "mdi:flash"},
     "altitude": {"name": "Altitude", "unit": "cm", "device_class": "distance", "suggested_unit_metric": "m", "suggested_unit_imperial": "ft", "icon": "mdi:altimeter"},
     "distance": {"name": "Distance", "unit": "m", "device_class": "distance", "suggested_unit_metric": "km", "suggested_unit_imperial": "mi", "icon": "mdi:arrow-expand-horizontal"},
-    "gradient": {"name": "Gradient", "unit": "°", "state_class": "measurement_angle", "icon": "mdi:image-filter-hdr"},
+    "gradient": {"name": "Gradient", "unit": "%", "icon": "mdi:image-filter-hdr"},
     "level": {"name": "Level", "entity_category": "diagnostic", "icon": "mdi:stairs"},
     "runlevel": {"name": "Run Level", "entity_category": "diagnostic", "icon": "mdi:run-fast"},
     "cycleprogress": {"name": "Cycle Progress", "entity_category": "diagnostic", "unit": "%", "icon": "mdi:transfer-right"},
