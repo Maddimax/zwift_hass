@@ -32,7 +32,12 @@ CONFIG_SCHEMA = vol.Schema(
                 ),
                 vol.Optional(CONF_INCLUDE_SELF, default=True): cv.boolean,
                 vol.Optional(CONF_NAME, default="Zwift"): cv.string,
-            }
+            },
+            # Silently drop unrecognized/legacy keys (e.g. the old sensor-platform
+            # schema's `update_interval`) instead of failing validation for the whole
+            # domain — a hard failure here takes down every existing config entry too,
+            # not just the YAML import.
+            extra=vol.REMOVE_EXTRA,
         )
     },
     extra=vol.ALLOW_EXTRA,
